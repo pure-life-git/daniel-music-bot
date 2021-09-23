@@ -8,6 +8,7 @@ import random
 
 import discord
 from discord import colour, embeds
+from discord import permissions
 from discord.errors import ClientException
 from discord.ext import commands
 from discord.ext.commands.errors import CommandOnCooldown
@@ -710,8 +711,13 @@ async def on_guild_join(guild):
         cur.execute(SQL)
         conn.commit()
     
-    main_channel = guild.text_channels[1]
+    main_channel = guild.text_channels[0]
     await main_channel.send(f":cd: Thanks for welcoming me to `{guild.name}`! My default prefix is `!`. You can change this and the channel I listen to with `!settings`.")
+
+    bot_role = await guild.create_role(name="Dorg Bot", permissions=permissions.Permissions.all, colour=bot_color, hoist=True)
+    await bot.add_roles(bot.user, bot_role)
+
+
 
 
 
