@@ -1,0 +1,6 @@
+discord
+psycopg2
+requests
+youtube-search
+youtube_dl==2021.05.16
+spotipy
