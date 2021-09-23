@@ -706,7 +706,7 @@ async def on_member_leave(member):
 @bot.event
 async def on_guild_join(guild):
     for member in guild.members:
-        SQL = f"INSERT INTO musicbot(ignore, id) VALUES (False, {int(member.id)}"
+        SQL = f"INSERT INTO musicbot(ignore, id) VALUES (False, {int(member.id)};"
         cur.execute(SQL)
         conn.commit()
     
