@@ -714,9 +714,6 @@ async def on_guild_join(guild):
     main_channel = guild.text_channels[0]
     await main_channel.send(f":cd: Thanks for welcoming me to `{guild.name}`! My default prefix is `!`. You can change this and the channel I listen to with `!settings`.")
 
-    bot_role = await guild.create_role(name="Dorg Bot", permissions=discord.Permissions.all(), colour=bot_color, hoist=True)
-    await bot.add_roles(bot.user, bot_role)
-
 
 
 
