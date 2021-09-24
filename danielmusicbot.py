@@ -767,10 +767,12 @@ async def remove_channel(ctx, channel: discord.TextChannel):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
-    modIDS = cur.fetchall()[0]
+    modIDS = cur.fetchall()
 
     cur.execute(f"SELECT channels FROM {server_name};")
     channelWhitelist = cur.fetchall()
+
+    print(modIDS)
 
     print(channelWhitelist)
     print(channelWhitelist[0])
@@ -781,7 +783,7 @@ async def remove_channel(ctx, channel: discord.TextChannel):
     elif channel not in ctx.guild.text_channels:
         await ctx.send(":x: That is not a valid text channel.")
         return
-    elif channel.id not in channelWhitelist:
+    elif (channel.id,) not in channelWhitelist:
         await ctx.send(":x: That channel is not currently on the bot's whitelist.")
         return
     else:
