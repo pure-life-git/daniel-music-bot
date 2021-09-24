@@ -691,21 +691,33 @@ async def nowplaying(ctx):
 
 @bot.group(name="settings", description="Allows an admin to change the settings of the bot", invoke_without_command=True)
 async def settings(ctx):
-    cur.execute(f"SELECT mods FROM {str(ctx.guild.id)};")
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT mods FROM {server_name};")
     modIDS = cur.fetchall()
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = cur.fetchall()
+
     if int(ctx.author.id) not in modIDS:
         ctx.send(":X: You must have a moderator role to use that command.")
         return
+    elif len(channelWhitelist) > 0 and str(ctx.channel.id) not in channelWhitelist:
+        await ctx.send(":X: This channel is not on the bot's whitelist")
+        return
+
     settings_embed = discord.Embed(title = "Settings", description = "", color=bot_color)
     settings_embed.add_field(name="Channels", value = f"This setting allows you to add or remove channels that the bot will listen to \n `channels` - lets you view the currently whitelisted channels \n `addchannel` - adds a channel to the bots whitelist \n `removechannel` - removes a channel from the bots whitelist", inline=False)
     settings_embed.add_field(name="Mods", value = f"This setting allows you to add or remove mods that can change bot settings \n `mods` - lets you view the current list of mods \n `addmod` - lets you add a mod \n `removemod` - lets you remove a mod")
 
 @settings.command(name="channels", description="Lets you view the currently whitelisted channels", aliases=["c"])
 async def channels(ctx):
-    cur.execute(f"SELECT mods FROM {str(ctx.guild.id)};")
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT mods FROM {server_name};")
     modIDS = cur.fetchall()
 
-    cur.execute(f"SELECT channels FROM {str(ctx.guild.id)};")
+    cur.execute(f"SELECT channels FROM {server_name};")
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
@@ -725,10 +737,12 @@ async def channels(ctx):
         
 @settings.command(name="addchannel", description="Lets you add a channel to the whitelist", aliases=["ac"])
 async def add_channel(ctx, channel: discord.channel):
-    cur.execute(f"SELECT mods FROM {str(ctx.guild.id)};")
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT mods FROM {server_name};")
     modIDS = cur.fetchall()
 
-    cur.execute(f"SELECT channels FROM {str(ctx.guild.id)};")
+    cur.execute(f"SELECT channels FROM {server_name};")
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
@@ -741,7 +755,7 @@ async def add_channel(ctx, channel: discord.channel):
         await ctx.send(":X: That channel is already in the bot's whitelist.")
         return
     else:
-        SQL = f"INSERT INTO {str(ctx.guild.id)}(channels) VALUES ('{channel.id}');"
+        SQL = f"INSERT INTO {server_name}(channels) VALUES ('{channel.id}');"
         cur.execute(SQL)
         conn.commit()
         await ctx.send(f"`{channel.name}` has been added to the bot's whitelist.")
@@ -749,10 +763,12 @@ async def add_channel(ctx, channel: discord.channel):
 
 @settings.command(name="removechannel", description="Lets you remove a channel from the whitelist", aliases=["rc"])
 async def remove_channel(ctx, channel: discord.channel):
-    cur.execute(f"SELECT mods FROM {str(ctx.guild.id)};")
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT mods FROM {server_name};")
     modIDS = cur.fetchall()
 
-    cur.execute(f"SELECT channels FROM {str(ctx.guild.id)};")
+    cur.execute(f"SELECT channels FROM {server_name};")
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
@@ -765,7 +781,7 @@ async def remove_channel(ctx, channel: discord.channel):
         await ctx.send(":X: That channel is not currently on the bot's whitelist.")
         return
     else:
-        SQL = f"UPDATE {str(ctx.guild.id)} SET channel = NULL WHERE channel = {str(channel.id)};"
+        SQL = f"UPDATE {server_name} SET channel = NULL WHERE channel = {str(channel.id)};"
         cur.execute(SQL)
         conn.commit()
         await ctx.send(f"`{channel.name}` has been removed from the bot's whitelist.")
@@ -773,10 +789,12 @@ async def remove_channel(ctx, channel: discord.channel):
 
 @settings.command(name="mods", description = "Lets you view the current mods", aliases=["m"])
 async def mods(ctx):
-    cur.execute(f"SELECT mods FROM {str(ctx.guild.id)};")
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT mods FROM {server_name};")
     modIDS = cur.fetchall()
 
-    cur.execute(f"SELECT channels FROM {str(ctx.guild.id)};")
+    cur.execute(f"SELECT channels FROM {server_name};")
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
@@ -798,10 +816,12 @@ async def mods(ctx):
 
 @settings.command(name="addmod", description="Lets you add a moderator to the bot", aliases=["am"])
 async def add_mod(ctx):
-    cur.execute(f"SELECT mods FROM {str(ctx.guild.id)};")
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT mods FROM {server_name};")
     modIDS = cur.fetchall()
 
-    cur.execute(f"SELECT channels FROM {str(ctx.guild.id)};")
+    cur.execute(f"SELECT channels FROM {server_name};")
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
@@ -817,7 +837,7 @@ async def add_mod(ctx):
             await ctx.send(":X: This user is already a moderator.")
             return
         else:
-            SQL = f"INSERT INTO {str(ctx.guild.id)}(mods) VALUES ({modUser.id});"
+            SQL = f"INSERT INTO {server_name}(mods) VALUES ({modUser.id});"
             cur.execute(SQL)
             conn.commit()
             await ctx.send(f"{modUser.name} has been added to the bot's mod list.")
@@ -825,10 +845,12 @@ async def add_mod(ctx):
 
 @settings.command(name="removemod", description="Lets you remove a moderator from the bot", aliases=["rm"])
 async def remove_mod(ctx):
-    cur.execute(f"SELECT mods FROM {str(ctx.guild.id)};")
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT mods FROM {server_name};")
     modIDS = cur.fetchall()
 
-    cur.execute(f"SELECT channels FROM {str(ctx.guild.id)};")
+    cur.execute(f"SELECT channels FROM {server_name};")
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
@@ -844,7 +866,7 @@ async def remove_mod(ctx):
             await ctx.send(":X: This user is not a moderator.")
             return
         else:
-            SQL = f"UPDATE {str(ctx.guild.id)} SET mod = NULL WHERE mod = {int(modUser.id)};"
+            SQL = f"UPDATE {server_name} SET mod = NULL WHERE mod = {int(modUser.id)};"
             cur.execute(SQL)
             conn.commit()
             await ctx.send(f"{modUser.name} has been removed from the bot's mod list.")
@@ -888,12 +910,14 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_guild_remove(guild):
+    server_name = "t"+str(guild.id)
+
     for member in guild.members:
         SQL = f"DELETE FROM musicbot WHERE id={member.id};"
         cur.execute(SQL)
         conn.commit()
     
-    SQL = f"DROP TABLE {str(guild.id)};"
+    SQL = f"DROP TABLE {server_name};"
     cur.execute(SQL)
     conn.commit()
     
