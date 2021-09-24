@@ -1280,6 +1280,8 @@ async def on_guild_join(guild):
     conn.commit()
 
     SQL = f"CREATE TABLE {queue_name} (song varchar(255), title varchar(255), channel varchar(255), runtime varchar(255), author varchar(255), live bool);"
+    cur.execute(SQL)
+    conn.commit()
 
     SQL = f"INSERT INTO prefixes(server_id,prefix) VALUES ({guild.id}, '{DEFAULT_PREFIX}');"
     cur.execute(SQL)
