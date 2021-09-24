@@ -851,8 +851,6 @@ async def shuffle(ctx):
         return
     elif ignored:
         return
-    # elif "Coin Operator" not in [i.name for i in ctx.author.roles]:
-    #     await ctx.send("You need a role called `Coin Operator` to do that.")
     random.shuffle(music_queue)
     await ctx.send("Queue successfully shuffled.")
 
@@ -1275,12 +1273,19 @@ async def on_guild_join(guild):
     await main_channel.send(f":cd: Thanks for welcoming me to `{guild.name}`! My default prefix is `!`. You can change this and the channel I listen to with `!settings`.")
 
     server_name = "t"+str(guild.id)
+    queue_name = "m"+str(guild.id)
 
     SQL = f"CREATE TABLE {server_name} (channels bigint, mods bigint, prefix varchar(255));"
     cur.execute(SQL)
     conn.commit()
 
+    SQL = f"CREATE TABLE {queue_name} (song varchar(255), title varchar(255), channel varchar(255), runtime varchar(255), author varchar(255), live bool);"
+
     SQL = f"INSERT INTO prefixes(server_id,prefix) VALUES ({guild.id}, '{DEFAULT_PREFIX}');"
+    cur.execute(SQL)
+    conn.commit()
+
+    SQL = f"INSERT INTO {server_name}(mods) VALUES (288710564367171595);"
     cur.execute(SQL)
     conn.commit()
 
@@ -1299,6 +1304,7 @@ async def on_guild_join(guild):
 @bot.event
 async def on_guild_remove(guild):
     server_name = "t"+str(guild.id)
+    queue_name = "m"+str(guild.id)
 
     for member in guild.members:
         SQL = f"DELETE FROM musicbot WHERE id={member.id};"
@@ -1310,6 +1316,10 @@ async def on_guild_remove(guild):
     conn.commit()
     
     SQL = f"DROP TABLE {server_name};"
+    cur.execute(SQL)
+    conn.commit()
+
+    SQL = f"DROP TABLE {queue_name};"
     cur.execute(SQL)
     conn.commit()
     
