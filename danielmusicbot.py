@@ -756,7 +756,7 @@ async def add_channel(ctx, channel: discord.TextChannel):
         await ctx.send(":x: That channel is already in the bot's whitelist.")
         return
     else:
-        SQL = f"INSERT INTO {server_name} SELECT channels VALUES ('{channel.id}');"
+        SQL = f"INSERT INTO {server_name}(channels) VALUES ('{channel.id}');"
         cur.execute(SQL)
         conn.commit()
         await ctx.send(f"`{channel.name}` has been added to the bot's whitelist.")
