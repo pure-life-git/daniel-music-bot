@@ -724,6 +724,9 @@ async def channels(ctx):
     if int(ctx.author.id) not in modIDS:
         ctx.send(":x: You must have a moderator role to use that command.")
         return
+    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.send(":x: This channel is not on the bot's whitelist")
+        return
     elif len(channelWhitelist) == 0:
         await ctx.send(":x: No channels are whitelisted. Commands can be accepted from any channel.")
         return
@@ -750,6 +753,9 @@ async def add_channel(ctx, channel: discord.TextChannel):
     if int(ctx.author.id) not in modIDS:
         ctx.send(":x: You must have a moderator role to use that command.")
         return
+    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.send(":x: This channel is not on the bot's whitelist")
+        return
     elif channel not in ctx.guild.text_channels:
         await ctx.send(":x: That is not a valid text channel.")
         return
@@ -775,6 +781,9 @@ async def remove_channel(ctx, channel: discord.TextChannel):
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
+        return
+    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.send(":x: This channel is not on the bot's whitelist")
         return
     elif channel not in ctx.guild.text_channels:
         await ctx.send(":x: That is not a valid text channel.")
