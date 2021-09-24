@@ -794,9 +794,15 @@ async def mods(ctx):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
+    for thing in cur.fetchall():
+        print(thing)
+        print(type(thing[0]))
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT channels FROM {server_name};")
+    for thing in cur.fetchall():
+        print(thing)
+        print(type(thing[0]))
     channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
 
     if int(ctx.author.id) not in modIDS:
