@@ -697,7 +697,7 @@ async def settings(ctx):
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
@@ -719,7 +719,7 @@ async def channels(ctx):
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
 
     if int(ctx.author.id) not in modIDS:
         ctx.send(":x: You must have a moderator role to use that command.")
@@ -745,7 +745,7 @@ async def add_channel(ctx, channel: discord.TextChannel):
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
 
     if int(ctx.author.id) not in modIDS:
         ctx.send(":x: You must have a moderator role to use that command.")
@@ -757,7 +757,7 @@ async def add_channel(ctx, channel: discord.TextChannel):
         await ctx.send(":x: That channel is already in the bot's whitelist.")
         return
     else:
-        SQL = f"INSERT INTO {server_name}(channels) VALUES ('{channel.id}');"
+        SQL = f"INSERT INTO {server_name}(channels) VALUES ({int(channel.id)});"
         cur.execute(SQL)
         conn.commit()
         await ctx.send(f"`{channel.name}` has been added to the bot's whitelist.")
@@ -771,7 +771,7 @@ async def remove_channel(ctx, channel: discord.TextChannel):
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
@@ -783,7 +783,7 @@ async def remove_channel(ctx, channel: discord.TextChannel):
         await ctx.send(":x: That channel is not currently on the bot's whitelist.")
         return
     else:
-        SQL = f"UPDATE {server_name} SET channel = NULL WHERE channel = {str(channel.id)};"
+        SQL = f"UPDATE {server_name} SET channel = NULL WHERE channel = {int(channel.id)};"
         cur.execute(SQL)
         conn.commit()
         await ctx.send(f"`{channel.name}` has been removed from the bot's whitelist.")
@@ -905,7 +905,7 @@ async def on_guild_join(guild):
 
     server_name = "t"+str(guild.id)
 
-    SQL = f"CREATE TABLE {server_name} (channels varchar(255), mods bigint);"
+    SQL = f"CREATE TABLE {server_name} (channels bigint, mods bigint);"
     cur.execute(SQL)
     conn.commit()
 
