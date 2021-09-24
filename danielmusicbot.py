@@ -833,7 +833,7 @@ async def add_mod(ctx):
         await ctx.send(":x: This channel is not on the bot's whitelist")
         return
 
-    for i in len(ctx.message.mentions):
+    for i in range(len(ctx.message.mentions)):
         modUser = ctx.message.mentions[i-1]
         if modUser.id in modIDS:
             await ctx.send(":x: This user is already a moderator.")
@@ -865,7 +865,7 @@ async def remove_mod(ctx):
         await ctx.send(":x: This channel is not on the bot's whitelist")
         return
 
-    for i in len(ctx.message.mentions):
+    for i in range(len(ctx.message.mentions)):
         modUser = ctx.message.mentions[i-1]
         if modUser.id not in modIDS:
             await ctx.send(":x: This user is not a moderator.")
