@@ -736,7 +736,7 @@ async def channels(ctx):
         return
         
 @settings.command(name="addchannel", description="Lets you add a channel to the whitelist", aliases=["ac"])
-async def add_channel(ctx, channel: discord.channel):
+async def add_channel(ctx, channel: discord.TextChannel):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
@@ -762,7 +762,7 @@ async def add_channel(ctx, channel: discord.channel):
         return
 
 @settings.command(name="removechannel", description="Lets you remove a channel from the whitelist", aliases=["rc"])
-async def remove_channel(ctx, channel: discord.channel):
+async def remove_channel(ctx, channel: discord.TextChannel):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
