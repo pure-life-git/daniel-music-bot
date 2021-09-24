@@ -702,7 +702,7 @@ async def settings(ctx):
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
         return
-    elif len(channelWhitelist) > 0 and str(ctx.channel.id) not in channelWhitelist:
+    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.send(":x: This channel is not on the bot's whitelist")
         return
     else:
@@ -802,7 +802,7 @@ async def mods(ctx):
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
         return
-    elif len(channelWhitelist) > 0 and str(ctx.channel.id) not in channelWhitelist:
+    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.send(":x: This channel is not on the bot's whitelist")
         return
     elif len(modIDS) == 0:
@@ -829,7 +829,7 @@ async def add_mod(ctx):
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
         return
-    elif len(channelWhitelist) > 0 and str(ctx.channel.id) not in channelWhitelist:
+    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.send(":x: This channel is not on the bot's whitelist")
         return
 
@@ -861,7 +861,7 @@ async def remove_mod(ctx):
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
         return
-    elif len(channelWhitelist) > 0 and str(ctx.channel.id) not in channelWhitelist:
+    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.send(":x: This channel is not on the bot's whitelist")
         return
 
