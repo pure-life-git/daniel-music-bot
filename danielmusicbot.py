@@ -21,7 +21,6 @@ import requests
 import youtube_dl
 from youtube_search import YoutubeSearch
 
-
 DEFAULT_PREFIX = "!"
 
 DATABASE_URL = os.environ['DATABASE_URL']
@@ -30,7 +29,6 @@ cur = conn.cursor()
 conn.autocommit = True
 
 async def get_prefix(bot, message):
-    server_name = "t" + str(message.guild.id)
     cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={message.guild.id};")
     return cur.fetchone()[0]
 
@@ -67,8 +65,6 @@ now_playing = ""
 
 song_repeating = False
 queue_repeating = False
-
-
 
 @bot.event
 async def on_ready():
@@ -157,7 +153,6 @@ async def playlist(ctx, song):
         await ctx.author.voice.channel.connect()
         await play_music(ctx, song)
         return
-
 
 async def check_play_next(ctx):
     voice = ctx.guild.voice_client
@@ -249,9 +244,7 @@ async def play_music(ctx,song):
 
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([song])
-        
-        
-        # await ctx.send(f"**Now Playing:** {title} - {channel} | {runtime}")
+
         voice.play(discord.FFmpegPCMAudio(source="song.mp3"),after=lambda error: bot.loop.create_task(check_play_next(ctx)))
         print("played audio...")
         np_embed = discord.Embed(title="Now Playing", description=f"`{title}` requested by {author.mention}", value=f"Duration: {runtime}", color=bot_color)
@@ -376,7 +369,6 @@ async def play(ctx, *args):
                         await ctx.send("Cannot queue a song longer than 2 hours.")
                         return
                     await playlist(ctx, (song, title, channel, runtime, author, live))
-                    # await play_soundcloud(ctx, (entry['webpage_url'], entry['title'], entry['uploader'], str(datetime.timedelta(seconds=int(entry['duration']))), ctx.author, False))
                 await ctx.send(f"Queued `{len(info['entries'])}` songs.")
             else:
                 title = info['title']
@@ -478,9 +470,6 @@ async def skip(ctx):
         return
     elif ignored:
         return
-    # elif "Coin Operator" not in [i.name for i in ctx.author.roles]
-    #     await ctx.send("You need a role called `Coin Operator` to do that.")
-
     voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
     if voice.is_connected():
         if voice.is_playing():
@@ -592,7 +581,6 @@ async def repeat(ctx):
     repeat_embed = discord.Embed(title="Repeat", description=f"**Song Repeating:** {song_repeating}\n**Queue Repeating:** {queue_repeating}", color=bot_color)
     await ctx.send(embed=repeat_embed)
 
-
 @repeat.command(name="song", description="Repeats the current song", aliases=["s"])
 async def song_repeat(ctx):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
@@ -638,8 +626,6 @@ async def none_repeat(ctx):
     song_repeating, queue_repeating = False, False
     await ctx.send(f"**Repeating:**: None" )
 
-    
-
 @repeat.command(name="queue", description="Repeats the current queue", aliases=["q"])
 async def queue_repeat(ctx):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
@@ -660,9 +646,7 @@ async def queue_repeat(ctx):
 
     global queue_repeating
     queue_repeating = not queue_repeating
-    await ctx.send(f"**Queue Repeating:** {queue_repeating}")
-
-    
+    await ctx.send(f"**Queue Repeating:** {queue_repeating}") 
 
 @bot.command(name="shuffle", description="Shuffles the music queue")
 async def shuffle(ctx):
@@ -751,8 +735,6 @@ async def remove(ctx, index: int):
         return
     elif ignored:
         return
-    # elif "Coin Operator" not in [i.name for i in ctx.author.roles]:
-    #     await ctx.send("You need a role called `Coin Operator` to do that.")
     if index < 1 or index > len(music_queue):
         await ctx.send("That is not a valid queue position.")
         return
@@ -789,7 +771,6 @@ async def nowplaying(ctx):
     nowplaying_embed.add_field(name=f"{now_playing[1]}", value=f"Artist: {now_playing[2]}\nRuntime: {now_playing[3]}\nQueued by: {now_playing[4].mention}", inline=False)
     nowplaying_embed.add_field(name="Song Progress", value=f"Current Time: {current_time} - {percent_done:.2f}% \n 0:00 |{bar_string}| {now_playing[3]}", inline=False)
     await ctx.send(embed=nowplaying_embed)
-
 
 @bot.group(name="settings", description="Allows an admin to change the settings of the bot", invoke_without_command=True)
 async def settings(ctx):
@@ -1076,7 +1057,6 @@ async def change_prefix(ctx, prefix):
         conn.commit()
         await ctx.send(f"Prefix successfully changed to `{prefix}`.")
         return
-    
 
 @bot.event
 async def on_member_join(member):
@@ -1137,13 +1117,6 @@ async def on_guild_remove(guild):
     cur.execute(SQL)
     conn.commit()
     
-
-
-
-
-
-
-
 #--------------------------------------------------------------------------------------------------------------------------------------#
 #runs the bot using the discord bot token provided within Heroku
 bot.run(os.environ['token'])
