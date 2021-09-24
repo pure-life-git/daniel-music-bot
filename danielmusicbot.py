@@ -770,9 +770,10 @@ async def remove_channel(ctx, channel: discord.TextChannel):
     modIDS = cur.fetchall()[0]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = cur.fetchall()[0]
+    channelWhitelist = cur.fetchall()
 
     print(channelWhitelist)
+    print(channelWhitelist[0])
 
     if int(ctx.author.id) not in modIDS:
         ctx.send(":x: You must have a moderator role to use that command.")
