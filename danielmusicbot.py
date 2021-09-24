@@ -7,7 +7,7 @@ import os
 import random
 
 import discord
-from discord import colour, embed
+from discord import colour
 from discord import permissions
 from discord.errors import ClientException
 from discord.ext import commands
