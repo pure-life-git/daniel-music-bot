@@ -31,7 +31,7 @@ conn.autocommit = True
 
 async def get_prefix(bot, message):
     server_name = "t" + str(message.guild.id)
-    cur.execute(f"SELECT prefix FROM {server_name};")
+    cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={message.guild.id};")
     return cur.fetchone()[0]
 
 intents = discord.Intents.all()
