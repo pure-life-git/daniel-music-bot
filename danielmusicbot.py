@@ -887,6 +887,39 @@ async def remove_mod(ctx):
             await ctx.send(f"{modUser.name} has been removed from the bot's mod list.")
             return
 
+@settings.command(name="prefix", description="Lets you change the prefix the bot uses in commands")
+async def change_prefix(ctx, prefix):
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT mods FROM {server_name};")
+    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
+
+    cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
+    current_prefix = str(cur.fetchone()[0])
+
+    if int(ctx.author.id) not in modIDS:
+        await ctx.send(":x: You must have a moderator role to use that command.")
+        return
+    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.send(":x: This channel is not on the bot's whitelist")
+        return
+    elif not isinstance(prefix, str):
+        await ctx.send(":x: The prefix must be a string (like a letter or punctuation).")
+        return
+    elif prefix == current_prefix:
+        await ctx.send(":x: That is the current prefix.")
+        return
+    else:
+        SQL = f"UPDATE prefixes SET prefix = '{str(prefix)}' WHERE server_id={ctx.guild.id};"
+        cur.execute(SQL)
+        conn.commit()
+        await ctx.send(f"Prefix successfully changed to `{prefix}`.")
+        return
+    
+
 @bot.event
 async def on_member_join(member):
     #insert into musicbot
