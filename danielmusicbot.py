@@ -278,8 +278,16 @@ async def play_music(ctx,song):
 async def play(ctx, *args):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
-    if str(ctx.channel) not in ["jukebox", "admins-only"]:
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif ignored:
         return
@@ -457,8 +465,16 @@ async def skip(ctx):
     print("skipping...")
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
-    if str(ctx.channel) not in ["jukebox", "admins-only"]:
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif ignored:
         return
@@ -482,8 +498,16 @@ async def skip(ctx):
 async def leave(ctx):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
-    if str(ctx.channel) not in ["jukebox", "admins-only"]:
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif ignored:
         return
@@ -502,8 +526,16 @@ async def leave(ctx):
 async def clear(ctx):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
-    if str(ctx.channel) not in ["jukebox", "admins-only"]:
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif ignored:
         return
@@ -515,8 +547,16 @@ async def clear(ctx):
 
 @bot.command(name="queue", description="Displays the queue of songs", aliases=["q"])
 async def queue(ctx):
-    if str(ctx.channel) not in ["jukebox", "admins-only"]:
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     
     total_runtime = 0
@@ -557,8 +597,16 @@ async def repeat(ctx):
 async def song_repeat(ctx):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
-    if str(ctx.channel) not in ["jukebox", "admins-only"]:
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif ignored:
         return
@@ -571,8 +619,16 @@ async def song_repeat(ctx):
 async def none_repeat(ctx):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
-    if str(ctx.channel) not in ["jukebox", "admins-only"]:
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif ignored:
         return
@@ -588,8 +644,16 @@ async def none_repeat(ctx):
 async def queue_repeat(ctx):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
-    if str(ctx.channel) not in ["jukebox", "admins-only"]:
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif ignored:
         return
@@ -604,8 +668,16 @@ async def queue_repeat(ctx):
 async def shuffle(ctx):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
-    if str(ctx.channel) not in ["jukebox", "admins-only"]:
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif ignored:
         return
@@ -618,8 +690,16 @@ async def shuffle(ctx):
 async def ignore(ctx, user: discord.Member = False):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
-    if str(ctx.channel) not in ["jukebox", "admins-only"]:
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif ignored or ctx.author.id not in modID:
         return
@@ -658,8 +738,16 @@ async def ignore(ctx, user: discord.Member = False):
 async def remove(ctx, index: int):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
-    if str(ctx.channel) not in ["jukebox", "admins-only"]:
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif ignored:
         return
@@ -674,6 +762,18 @@ async def remove(ctx, index: int):
 
 @bot.command(name="nowplaying", description="Displays the song that is currently playing", aliases=["np"])
 async def nowplaying(ctx):
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
+        return
+
     percent_done = (round((int(datetime.datetime.now().timestamp())-now_playing[5])/col_to_sec(now_playing[3]),2)*100)
     bar_string = ""
     current_time = f"{str(datetime.timedelta(seconds=int(int(datetime.datetime.now().timestamp())-now_playing[5])))}"
@@ -702,10 +802,15 @@ async def settings(ctx):
     channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
 
     if int(ctx.author.id) not in modIDS:
+        await ctx.message.delete()
         await ctx.send(":x: You must have a moderator role to use that command.")
+        await asyncio.sleep(5)
         return
     elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
-        await ctx.send(":x: This channel is not on the bot's whitelist")
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     else:
         settings_embed = discord.Embed(title = "Settings", description = "", color=bot_color)
@@ -726,10 +831,15 @@ async def channels(ctx):
     channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
 
     if int(ctx.author.id) not in modIDS:
-        ctx.send(":x: You must have a moderator role to use that command.")
+        await ctx.message.delete()
+        await ctx.send(":x: You must have a moderator role to use that command.")
+        await asyncio.sleep(5)
         return
     elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
-        await ctx.send(":x: This channel is not on the bot's whitelist")
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif len(channelWhitelist) == 0:
         await ctx.send(":x: No channels are whitelisted. Commands can be accepted from any channel.")
@@ -754,10 +864,15 @@ async def add_channel(ctx, channel: discord.TextChannel):
     channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
 
     if int(ctx.author.id) not in modIDS:
-        ctx.send(":x: You must have a moderator role to use that command.")
+        await ctx.message.delete()
+        await ctx.send(":x: You must have a moderator role to use that command.")
+        await asyncio.sleep(5)
         return
     elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
-        await ctx.send(":x: This channel is not on the bot's whitelist")
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif channel not in ctx.guild.text_channels:
         await ctx.send(":x: That is not a valid text channel.")
@@ -783,10 +898,15 @@ async def remove_channel(ctx, channel: discord.TextChannel):
     channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
 
     if int(ctx.author.id) not in modIDS:
+        await ctx.message.delete()
         await ctx.send(":x: You must have a moderator role to use that command.")
+        await asyncio.sleep(5)
         return
     elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
-        await ctx.send(":x: This channel is not on the bot's whitelist")
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif channel not in ctx.guild.text_channels:
         await ctx.send(":x: That is not a valid text channel.")
@@ -812,10 +932,15 @@ async def mods(ctx):
     channelWhitelist = [int(channel[0]) for channel in cur.fetchall() if type(channel[0]) is str]
 
     if int(ctx.author.id) not in modIDS:
+        await ctx.message.delete()
         await ctx.send(":x: You must have a moderator role to use that command.")
+        await asyncio.sleep(5)
         return
     elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
-        await ctx.send(":x: This channel is not on the bot's whitelist")
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     elif len(modIDS) == 0:
         await ctx.send("There are no moderators in this server")
@@ -839,10 +964,15 @@ async def add_mod(ctx):
     channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
 
     if int(ctx.author.id) not in modIDS:
+        await ctx.message.delete()
         await ctx.send(":x: You must have a moderator role to use that command.")
+        await asyncio.sleep(5)
         return
     elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
-        await ctx.send(":x: This channel is not on the bot's whitelist")
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
 
     for i in range(len(ctx.message.mentions)):
@@ -871,10 +1001,15 @@ async def remove_mod(ctx):
     channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
 
     if int(ctx.author.id) not in modIDS:
+        await ctx.message.delete()
         await ctx.send(":x: You must have a moderator role to use that command.")
+        await asyncio.sleep(5)
         return
     elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
-        await ctx.send(":x: This channel is not on the bot's whitelist")
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
 
     for i in range(len(ctx.message.mentions)):
@@ -899,6 +1034,26 @@ async def change_prefix(ctx, prefix):
     cur.execute(f"SELECT channels FROM {server_name};")
     channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
 
+    if int(ctx.author.id) not in modIDS:
+        await ctx.message.delete()
+        await ctx.send(":x: You must have a moderator role to use that command.")
+        await asyncio.sleep(5)
+        return
+    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
+        return
+
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT mods FROM {server_name};")
+    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
+
     cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
     current_prefix = str(cur.fetchone()[0])
 
@@ -906,8 +1061,9 @@ async def change_prefix(ctx, prefix):
         await ctx.send(":x: You must have a moderator role to use that command.")
         return
     elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
-        await ctx.send(":x: This channel is not on the bot's whitelist")
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
         return
+        await mess.delete()
     elif not isinstance(prefix, str):
         await ctx.send(":x: The prefix must be a string (like a letter or punctuation).")
         return
