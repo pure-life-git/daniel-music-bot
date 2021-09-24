@@ -43,10 +43,6 @@ discord.opus.load_opus(find)
 auth_manager = oauth2.SpotifyClientCredentials(client_id=os.environ['spot_id'], client_secret=os.environ['spot_secret'])
 sp = spotipy.Spotify(auth_manager=auth_manager)
 
-channelList = []
-
-modID = []
-
 music_queue = []
 
 ydl_opts = {
@@ -860,7 +856,7 @@ async def shuffle(ctx):
     random.shuffle(music_queue)
     await ctx.send("Queue successfully shuffled.")
 
-@bot.command(name="ignore", description="Lets a Coin Operator take away someone's music bot privileges", aliases=["i"])
+@bot.command(name="ignore", description="Lets a Moderator take away someone's music bot privileges", aliases=["i"])
 async def ignore(ctx, user: discord.Member = False):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
@@ -869,13 +865,23 @@ async def ignore(ctx, user: discord.Member = False):
     cur.execute(f"SELECT channels FROM {server_name};")
     channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
 
+    cur.execute(f"SELECT mods FROM {server_name};")
+    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
+
+    
+
     if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
         mess = await ctx.send(":x: This channel is not on the bot's whitelist")
         await asyncio.sleep(5)
         await mess.delete()
         return
-    elif ignored or ctx.author.id not in modID:
+    elif int(ctx.author.id) not in modIDS:
+        await ctx.message.delete()
+        await ctx.send(":x: You must have a moderator role to use that command.")
+        await asyncio.sleep(5)
+        return
+    elif ignored:
         return
 
     if not user:
