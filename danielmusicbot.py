@@ -623,12 +623,6 @@ async def play(ctx, *args):
     if voice:
         if voice.is_playing():
             music_queue.append((song, title, channel, runtime, ctx.author, live))
-<<<<<<< HEAD
-            SQL = f"INSERT INTO {queue_name} VALUES ('{song}', '{title}', '{channel}', '{runtime}', '{ctx.author}', {live});"
-            cur.execute(SQL)
-            conn.commit()
-=======
->>>>>>> parent of 9d19eea (Update danielmusicbot.py)
             total_runtime = 0
             for song in music_queue[1:]:
                 total_runtime += col_to_sec(song[3])
