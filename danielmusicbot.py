@@ -705,10 +705,11 @@ async def settings(ctx):
     elif len(channelWhitelist) > 0 and str(ctx.channel.id) not in channelWhitelist:
         await ctx.send(":x: This channel is not on the bot's whitelist")
         return
-
-    settings_embed = discord.Embed(title = "Settings", description = "", color=bot_color)
-    settings_embed.add_field(name="Channels", value = f"This setting allows you to add or remove channels that the bot will listen to \n `channels` - lets you view the currently whitelisted channels \n `addchannel` - adds a channel to the bots whitelist \n `removechannel` - removes a channel from the bots whitelist", inline=False)
-    settings_embed.add_field(name="Mods", value = f"This setting allows you to add or remove mods that can change bot settings \n `mods` - lets you view the current list of mods \n `addmod` - lets you add a mod \n `removemod` - lets you remove a mod")
+    else:
+        settings_embed = discord.Embed(title = "Settings", description = "", color=bot_color)
+        settings_embed.add_field(name="Channels", value = f"This setting allows you to add or remove channels that the bot will listen to \n `channels` - lets you view the currently whitelisted channels \n `addchannel` - adds a channel to the bots whitelist \n `removechannel` - removes a channel from the bots whitelist", inline=False)
+        settings_embed.add_field(name="Mods", value = f"This setting allows you to add or remove mods that can change bot settings \n `mods` - lets you view the current list of mods \n `addmod` - lets you add a mod \n `removemod` - lets you remove a mod")
+        await ctx.send(embeds=settings_embed)
 
 @settings.command(name="channels", description="Lets you view the currently whitelisted channels", aliases=["c"])
 async def channels(ctx):
