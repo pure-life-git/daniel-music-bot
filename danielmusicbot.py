@@ -838,6 +838,9 @@ async def add_mod(ctx):
         if modUser.id in modIDS:
             await ctx.send(":x: This user is already a moderator.")
             return
+        elif modUser.bot:
+            await ctx.send(":x: You cannot add other bots as moderators.")
+            return
         else:
             SQL = f"INSERT INTO {server_name}(mods) VALUES ({modUser.id});"
             cur.execute(SQL)
@@ -901,6 +904,8 @@ async def on_guild_join(guild):
     conn.commit()
 
     for member in guild.members:
+        if member.bot:
+            continue
         SQL = f"INSERT INTO musicbot(ignore, id) VALUES (False, {int(member.id)});"
         cur.execute(SQL)
         conn.commit()
