@@ -913,7 +913,7 @@ async def on_guild_join(guild):
     cur.execute(SQL)
     conn.commit()
 
-    SQL = f"INSERT INTO prefixes(server_id,prefix) VALUES ({guild.id}, {DEFAULT_PREFIX});"
+    SQL = f"INSERT INTO prefixes(server_id,prefix) VALUES ({guild.id}, '{DEFAULT_PREFIX}');"
     cur.execute(SQL)
     conn.commit()
 
