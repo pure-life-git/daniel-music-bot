@@ -729,6 +729,7 @@ async def channels(ctx):
     else:
         channelEmbed = discord.Embed(title="Channel Whitelist", description = "", color=bot_color)
         for channelID in channelWhitelist:
+            print(channelID)
             channel = bot.get_channel(channelID)
             channelEmbed.add_field(name=channel.name, value=":white_circle: This channel is whitelisted", inline=False)
 
