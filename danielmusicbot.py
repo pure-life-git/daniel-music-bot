@@ -7,7 +7,7 @@ import os
 import random
 
 import discord
-from discord import colour, embeds
+from discord import colour, embed
 from discord import permissions
 from discord.errors import ClientException
 from discord.ext import commands
@@ -697,7 +697,7 @@ async def settings(ctx):
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
@@ -709,7 +709,7 @@ async def settings(ctx):
         settings_embed = discord.Embed(title = "Settings", description = "", color=bot_color)
         settings_embed.add_field(name="Channels", value = f"This setting allows you to add or remove channels that the bot will listen to \n `channels` - lets you view the currently whitelisted channels \n `addchannel` - adds a channel to the bots whitelist \n `removechannel` - removes a channel from the bots whitelist", inline=False)
         settings_embed.add_field(name="Mods", value = f"This setting allows you to add or remove mods that can change bot settings \n `mods` - lets you view the current list of mods \n `addmod` - lets you add a mod \n `removemod` - lets you remove a mod")
-        await ctx.send(embeds=settings_embed)
+        await ctx.send(embed=settings_embed)
 
 @settings.command(name="channels", description="Lets you view the currently whitelisted channels", aliases=["c"])
 async def channels(ctx):
@@ -719,7 +719,7 @@ async def channels(ctx):
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
 
     if int(ctx.author.id) not in modIDS:
         ctx.send(":x: You must have a moderator role to use that command.")
@@ -734,7 +734,7 @@ async def channels(ctx):
             channel = bot.get_channel(channelID)
             channelEmbed.add_field(name=channel.name, value=":white_circle: This channel is whitelisted", inline=False)
 
-        await ctx.send(embeds=channelEmbed)
+        await ctx.send(embed=channelEmbed)
         return
         
 @settings.command(name="addchannel", description="Lets you add a channel to the whitelist", aliases=["ac"])
@@ -745,7 +745,7 @@ async def add_channel(ctx, channel: discord.TextChannel):
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
 
     if int(ctx.author.id) not in modIDS:
         ctx.send(":x: You must have a moderator role to use that command.")
@@ -771,7 +771,7 @@ async def remove_channel(ctx, channel: discord.TextChannel):
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
@@ -797,7 +797,7 @@ async def mods(ctx):
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
@@ -813,7 +813,7 @@ async def mods(ctx):
         for modID in modIDS:
             mod = bot.get_user(modID)
             mod_embed.add_field(name=mod.display_name, value = f":crossed_swords: This user is a moderator", inline=False)
-        await ctx.send(embeds=mod_embed)
+        await ctx.send(embed=mod_embed)
         return
 
 @settings.command(name="addmod", description="Lets you add a moderator to the bot", aliases=["am"])
@@ -824,7 +824,7 @@ async def add_mod(ctx):
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
@@ -853,7 +853,7 @@ async def remove_mod(ctx):
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is str]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
