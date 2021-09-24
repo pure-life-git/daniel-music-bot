@@ -341,11 +341,6 @@ async def playlist(ctx, song):
         return
 
 async def check_play_next(ctx):
-    queue_name = "m"+str(ctx.guild.id)
-    cur.execute(f"SELECT * FROM {queue_name};")
-    sql_queue = [thing for thing in cur.fetchall()]
-    print(sql_queue)
-
     voice = ctx.guild.voice_client
     if len(music_queue) > 0:
         if song_repeating:
@@ -387,6 +382,34 @@ async def check_play_next(ctx):
 
 async def play_music(ctx,song):
     print(f"playing {song[1]}")
+    if isinstance(ctx, discord.VoiceChannel):
+        song_there = os.path.isfile("song.mp3")
+
+        if song_there:
+            os.remove("song.mp3")
+
+        voice = ctx.guild.voice_client
+
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([song])
+
+        if voice:
+            if voice.is_connected():
+                if voice.is_playing():
+                    voice.stop()
+                    voice.play(FFmpegPCMAudio(source="song.mp3"))
+                else:
+                    voice.play(FFmpegPCMAudio(source="song.mp3"))
+            else:
+                await ctx.connect()
+                voice.play(FFmpegPCMAudio(source="song.mp3"))
+        else:
+            voice = await ctx.connect()
+            voice.play(FFmpegPCMAudio(source="song.mp3"))
+        await asyncio.sleep(120)
+        if not voice.is_playing():
+            await voice.disconnect()    
+        return
         
     global now_playing
     if song != now_playing:
@@ -432,8 +455,6 @@ async def play_music(ctx,song):
 
 @bot.command(name="play", description="Plays a song in a voice channel", aliases=["p"])
 async def play(ctx, *args):
-    queue_name = "m"+str(ctx.guild.id)
-
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
     server_name = "t"+str(ctx.guild.id)
@@ -602,9 +623,12 @@ async def play(ctx, *args):
     if voice:
         if voice.is_playing():
             music_queue.append((song, title, channel, runtime, ctx.author, live))
+<<<<<<< HEAD
             SQL = f"INSERT INTO {queue_name} VALUES ('{song}', '{title}', '{channel}', '{runtime}', '{ctx.author}', {live});"
             cur.execute(SQL)
             conn.commit()
+=======
+>>>>>>> parent of 9d19eea (Update danielmusicbot.py)
             total_runtime = 0
             for song in music_queue[1:]:
                 total_runtime += col_to_sec(song[3])
