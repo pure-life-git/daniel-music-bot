@@ -610,7 +610,6 @@ async def shuffle(ctx):
 async def ignore(ctx, user: discord.Member = False):
     cur.execute(f"SELECT ignore FROM musicbot WHERE id = {int(ctx.author.id)};")
     ignored = cur.fetchone()[0]
-    print(ignored)
     if str(ctx.channel) not in ["jukebox", "admins-only"]:
         await ctx.message.delete()
         return
@@ -634,7 +633,6 @@ async def ignore(ctx, user: discord.Member = False):
             
     name = user.name
     id = int(user.id)
-    print(id)
     SQL = f"UPDATE musicbot SET ignore = NOT ignore WHERE id = {id};"
 
     cur.execute(SQL)
@@ -669,10 +667,6 @@ async def remove(ctx, index: int):
 @bot.command(name="nowplaying", description="Displays the song that is currently playing", aliases=["np"])
 async def nowplaying(ctx):
     percent_done = (round((int(datetime.datetime.now().timestamp())-now_playing[5])/col_to_sec(now_playing[3]),2)*100)
-    print(now_playing[5])
-    print((int(datetime.datetime.now().timestamp())-now_playing[5])/col_to_sec(now_playing[3]))
-
-    print(percent_done)
     bar_string = ""
     current_time = f"{str(datetime.timedelta(seconds=int(int(datetime.datetime.now().timestamp())-now_playing[5])))}"
     for i in range(math.floor(int(percent_done)/10)-1):
@@ -733,7 +727,6 @@ async def channels(ctx):
     else:
         channelEmbed = discord.Embed(title="Channel Whitelist", description = "", color=bot_color)
         for channelID in channelWhitelist:
-            print(channelID)
             channel = bot.get_channel(channelID)
             channelEmbed.add_field(name=channel.name, value=":white_circle: This channel is whitelisted", inline=False)
 
