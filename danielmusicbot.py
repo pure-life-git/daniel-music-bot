@@ -796,7 +796,7 @@ async def mods(ctx):
         await ctx.send(embeds=mod_embed)
         return
 
-@settings.command(name="addmod", description="Lets you add a moderator to the bot", aliases="am")
+@settings.command(name="addmod", description="Lets you add a moderator to the bot", aliases=["am"])
 async def add_mod(ctx):
     cur.execute(f"SELECT mods FROM {str(ctx.guild.id)};")
     modIDS = cur.fetchall()
