@@ -700,10 +700,10 @@ async def settings(ctx):
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
-        ctx.send(":X: You must have a moderator role to use that command.")
+        await ctx.send(":x: You must have a moderator role to use that command.")
         return
     elif len(channelWhitelist) > 0 and str(ctx.channel.id) not in channelWhitelist:
-        await ctx.send(":X: This channel is not on the bot's whitelist")
+        await ctx.send(":x: This channel is not on the bot's whitelist")
         return
 
     settings_embed = discord.Embed(title = "Settings", description = "", color=bot_color)
@@ -721,10 +721,10 @@ async def channels(ctx):
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
-        ctx.send(":X: You must have a moderator role to use that command.")
+        ctx.send(":x: You must have a moderator role to use that command.")
         return
     elif len(channelWhitelist) == 0:
-        await ctx.send(":X: No channels are whitelisted. Commands can be accepted from any channel.")
+        await ctx.send(":x: No channels are whitelisted. Commands can be accepted from any channel.")
         return
     else:
         channelEmbed = discord.Embed(title="Channel Whitelist", description = "", color=bot_color)
@@ -746,13 +746,13 @@ async def add_channel(ctx, channel: discord.channel):
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
-        ctx.send(":X: You must have a moderator role to use that command.")
+        ctx.send(":x: You must have a moderator role to use that command.")
         return
     elif channel not in ctx.guild.text_channels:
-        await ctx.send(":X: That is not a valid text channel.")
+        await ctx.send(":x: That is not a valid text channel.")
         return
     elif channel.id in channelWhitelist:
-        await ctx.send(":X: That channel is already in the bot's whitelist.")
+        await ctx.send(":x: That channel is already in the bot's whitelist.")
         return
     else:
         SQL = f"INSERT INTO {server_name}(channels) VALUES ('{channel.id}');"
@@ -772,13 +772,13 @@ async def remove_channel(ctx, channel: discord.channel):
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
-        ctx.send(":X: You must have a moderator role to use that command.")
+        ctx.send(":x: You must have a moderator role to use that command.")
         return
     elif channel not in ctx.guild.text_channels:
-        await ctx.send(":X: That is not a valid text channel.")
+        await ctx.send(":x: That is not a valid text channel.")
         return
     elif channel.id not in channelWhitelist:
-        await ctx.send(":X: That channel is not currently on the bot's whitelist.")
+        await ctx.send(":x: That channel is not currently on the bot's whitelist.")
         return
     else:
         SQL = f"UPDATE {server_name} SET channel = NULL WHERE channel = {str(channel.id)};"
@@ -798,10 +798,10 @@ async def mods(ctx):
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
-        await ctx.send(":X: You must have a moderator role to use that command.")
+        await ctx.send(":x: You must have a moderator role to use that command.")
         return
     elif len(channelWhitelist) > 0 and str(ctx.channel.id) not in channelWhitelist:
-        await ctx.send(":X: This channel is not on the bot's whitelist")
+        await ctx.send(":x: This channel is not on the bot's whitelist")
         return
     elif len(modIDS) == 0:
         await ctx.send("There are no moderators in this server")
@@ -825,16 +825,16 @@ async def add_mod(ctx):
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
-        await ctx.send(":X: You must have a moderator role to use that command.")
+        await ctx.send(":x: You must have a moderator role to use that command.")
         return
     elif len(channelWhitelist) > 0 and str(ctx.channel.id) not in channelWhitelist:
-        await ctx.send(":X: This channel is not on the bot's whitelist")
+        await ctx.send(":x: This channel is not on the bot's whitelist")
         return
 
     for i in len(ctx.message.mentions):
         modUser = ctx.message.mentions[i-1]
         if modUser.id in modIDS:
-            await ctx.send(":X: This user is already a moderator.")
+            await ctx.send(":x: This user is already a moderator.")
             return
         else:
             SQL = f"INSERT INTO {server_name}(mods) VALUES ({modUser.id});"
@@ -854,16 +854,16 @@ async def remove_mod(ctx):
     channelWhitelist = cur.fetchall()
 
     if int(ctx.author.id) not in modIDS:
-        await ctx.send(":X: You must have a moderator role to use that command.")
+        await ctx.send(":x: You must have a moderator role to use that command.")
         return
     elif len(channelWhitelist) > 0 and str(ctx.channel.id) not in channelWhitelist:
-        await ctx.send(":X: This channel is not on the bot's whitelist")
+        await ctx.send(":x: This channel is not on the bot's whitelist")
         return
 
     for i in len(ctx.message.mentions):
         modUser = ctx.message.mentions[i-1]
         if modUser.id not in modIDS:
-            await ctx.send(":X: This user is not a moderator.")
+            await ctx.send(":x: This user is not a moderator.")
             return
         else:
             SQL = f"UPDATE {server_name} SET mod = NULL WHERE mod = {int(modUser.id)};"
