@@ -21,15 +21,22 @@ import requests
 import youtube_dl
 from youtube_search import YoutubeSearch
 
-intents = discord.Intents.all()
-bot = commands.Bot(command_prefix = '!', description = "General purpose music bot", intents=intents, case_insensitive = True)
-bot.remove_command('help')
-bot_color = discord.Color.from_rgb(81,193,177)
+
 
 DATABASE_URL = os.environ['DATABASE_URL']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = conn.cursor()
 conn.autocommit = True
+
+def get_prefix(client, message):
+    server_name = "t" + str(message.guild.id)
+    cur.execute(f"SELECT prefix FROM {server_name};")
+    return cur.fetchone()[0][0]
+
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix = get_prefix, description = "General purpose music bot", intents=intents, case_insensitive = True)
+bot.remove_command('help')
+bot_color = discord.Color.from_rgb(81,193,177)
 
 find = ctypes.util.find_library('opus')
 discord.opus.load_opus(find)
@@ -901,7 +908,11 @@ async def on_guild_join(guild):
 
     server_name = "t"+str(guild.id)
 
-    SQL = f"CREATE TABLE {server_name} (channels bigint, mods bigint);"
+    SQL = f"CREATE TABLE {server_name} (channels bigint, mods bigint, prefix varchar(255));"
+    cur.execute(SQL)
+    conn.commit()
+
+    SQL = f"INSERT INTO {server_name}(prefix) VALUES ('!')"
     cur.execute(SQL)
     conn.commit()
 
