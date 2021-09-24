@@ -66,6 +66,188 @@ now_playing = ""
 song_repeating = False
 queue_repeating = False
 
+@bot.group(name='help', invoke_without_command = True)
+async def help(ctx):
+    if str(ctx.channel) not in channelList:
+        await ctx.message.delete()
+        return
+    cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
+    cur_prefix = cur.fetchone()[0]
+    helpEmbed = discord.Embed(title = "Dorg Bot Help", description = f"The prefix of the bot is `{cur_prefix}`", color = bot_color)
+    helpEmbed.add_field(name = ":musical_note: **Music - 8**", value = "`play`, `skip`, `clear`, `queue`, `leave`, `shuffle`, `repeat`, `ignore`")
+    helpEmbed.add_field(name = ":gear: **Settings**", value = "`settings`", inline = False)
+    helpEmbed.set_footer(text = "For more information try .help (command) or .help (category), ex: .help play or .help settings")
+    await ctx.send(embed=helpEmbed)
+
+# MUSIC HELP COMMANDS
+
+@help.command(name = "music")
+async def music_help(ctx):
+    cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
+    cur_prefix = cur.fetchone()[0]
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
+        return
+    helpEmbed = discord.Embed(title = "Dorg Bot Help", description = "Help with the Music category", color = bot_color)
+    helpEmbed.add_field(name = ":musical_note: Music Commands :musical_note:", value = "**play**\nPlays a song\n**skip**\nSkips the song\n**clear**\nClears the queue\n**queue**\nShows the queue\n**leave**\nForces the bot to leave\n**shuffle**\nShuffles the queue\n**repeat**\nRepeats the song\n**ignore**\nIgnores a user's commands", inline=False)
+    helpEmbed.set_footer(text=f"For more help, type {cur_prefix}help `command` (ex. {cur_prefix}help play)")
+    await ctx.send(embeds=helpEmbed)
+@help.command(name = "play")
+async def play_help(ctx):
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
+        return
+    helpEmbed = discord.Embed(title = "Dorg Bot Help", description = "Help with the play command", color = bot_color)
+    helpEmbed.add_field(name = "play `<youtube url, search term, or spotify playlist link>`", value = "play lets you queue a song from youtube or a playlist from spotify")
+    await ctx.send(embed=helpEmbed)
+@help.command(name = "skip")
+async def skip_help(ctx):
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
+        return
+    helpEmbed = discord.Embed(title = "Dorg Bot Help", description = "Help with the skip command", color = bot_color)
+    helpEmbed.add_field(name = "skip", value = "skip lets you skip the currently playing song")
+    await ctx.send(embed=helpEmbed)
+@help.command(name = "clear")
+async def clear_help(ctx):
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
+        return
+    helpEmbed = discord.Embed(title = "Dorg Bot Help", description = "Help with the clear command", color = bot_color)
+    helpEmbed.add_field(name = "clear", value = "clear lets you clear the song queue")
+    await ctx.send(embed=helpEmbed)
+@help.command(name = "leave")
+async def leave_help(ctx):
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
+        return
+    helpEmbed = discord.Embed(title = "Dorg Bot Help", description = "Help with the leave command", color = bot_color)
+    helpEmbed.add_field(name = "leave", value = "leave forces the bot to leave the voice channel")
+    await ctx.send(embed=helpEmbed)
+@help.command(name = "shuffle")
+async def shuffle_help(ctx):
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
+        return
+    helpEmbed = discord.Embed(title = "Dorg Bot Help", description = "Help with the shuffle command", color = bot_color)
+    helpEmbed.add_field(name = "shuffle", value = "shuffle lets you shuffle the music queue")
+    await ctx.send(embed=helpEmbed)
+@help.command(name = "repeat")
+async def repeat_help(ctx):
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
+        return
+    helpEmbed = discord.Embed(title = "Dorg Bot Help", description = "Help with the repeat command", color = bot_color)
+    helpEmbed.add_field(name = "repeat", value = "repeat lets you repeat a song indefinitely")
+    await ctx.send(embed=helpEmbed)
+@help.command(name = "ignore")
+async def ignore_help(ctx):
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
+        return
+    helpEmbed = discord.Embed(title = "Dorg Bot Help", description = "Help with the ignore command", color = bot_color)
+    helpEmbed.add_field(name = "ignore `<mention member>`", value = "ignore lets a moderator take away someone's music bot privileges")
+    await ctx.send(embed=helpEmbed)
+@help.command(name = "queue")
+async def queue_help(ctx):
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
+        return
+    helpEmbed = discord.Embed(title = "Dorg Bot Help", description = "Help with the queue command", color = bot_color)
+    helpEmbed.add_field(name = "queue", value = "queue lets you view the song queue")
+    await ctx.send(embed=helpEmbed)
+@help.command(name = "settings")
+async def settings_help(ctx):
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
+        await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
+        return
+    helpEmbed = discord.Embed(title = "Dorg Bot Help", description = "Help with the settings command", color = bot_color)
+    helpEmbed.add_field(name = "settings", value = "settings shows the channel and mod settings for the bot")
+    await ctx.send(embed=helpEmbed)
+
+
+
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
