@@ -870,7 +870,9 @@ async def on_guild_join(guild):
     main_channel = guild.text_channels[0]
     await main_channel.send(f":cd: Thanks for welcoming me to `{guild.name}`! My default prefix is `!`. You can change this and the channel I listen to with `!settings`.")
 
-    SQL = f"CREATE TABLE {str(guild.id)} (channels varchar(255), mods bigint);"
+    server_name = "t"+str(guild.id)
+
+    SQL = f"CREATE TABLE {server_name} (channels varchar(255), mods bigint);"
     cur.execute(SQL)
     conn.commit()
 
@@ -880,7 +882,7 @@ async def on_guild_join(guild):
         conn.commit()
 
         if member.top_role.permissions.administrator:
-            SQL = f"INSERT INTO {str(guild.id)}(mods) VALUES ({int(member.id)});"
+            SQL = f"INSERT INTO {server_name}(mods) VALUES ({int(member.id)});"
             cur.execute(SQL)
             conn.commit()
 
