@@ -22,16 +22,17 @@ import youtube_dl
 from youtube_search import YoutubeSearch
 
 
+DEFAULT_PREFIX = "!"
 
 DATABASE_URL = os.environ['DATABASE_URL']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = conn.cursor()
 conn.autocommit = True
 
-def get_prefix(client, message):
+async def get_prefix(bot, message):
     server_name = "t" + str(message.guild.id)
     cur.execute(f"SELECT prefix FROM {server_name};")
-    return cur.fetchone()[0][0]
+    return cur.fetchone()[0]
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix = get_prefix, description = "General purpose music bot", intents=intents, case_insensitive = True)
@@ -912,7 +913,7 @@ async def on_guild_join(guild):
     cur.execute(SQL)
     conn.commit()
 
-    SQL = f"INSERT INTO {server_name}(prefix) VALUES ('!')"
+    SQL = f"INSERT INTO prefixes(server_id,prefix) VALUES ({guild.id}, {DEFAULT_PREFIX});"
     cur.execute(SQL)
     conn.commit()
 
@@ -936,6 +937,10 @@ async def on_guild_remove(guild):
         SQL = f"DELETE FROM musicbot WHERE id={member.id};"
         cur.execute(SQL)
         conn.commit()
+    
+    SQL = f"DELETE FROM prefixes WHERE server_id={guild.id};"
+    cur.execute(SQL)
+    conn.commit()
     
     SQL = f"DROP TABLE {server_name};"
     cur.execute(SQL)
