@@ -68,8 +68,16 @@ queue_repeating = False
 
 @bot.group(name='help', invoke_without_command = True)
 async def help(ctx):
-    if str(ctx.channel) not in channelList:
+    server_name = "t"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT channels FROM {server_name};")
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
+
+    if len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
         await ctx.message.delete()
+        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
+        await asyncio.sleep(5)
+        await mess.delete()
         return
     cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
     cur_prefix = cur.fetchone()[0]
