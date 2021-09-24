@@ -602,7 +602,7 @@ async def play(ctx, *args):
     if voice:
         if voice.is_playing():
             music_queue.append((song, title, channel, runtime, ctx.author, live))
-            SQL = f"INSERT INTO {queue_name} VALUES ({song}, {title}, {channel}, {runtime}, {ctx.author}, {live});"
+            SQL = f"INSERT INTO {queue_name} VALUES ('{song}', '{title}', '{channel}', '{runtime}', '{ctx.author}', {live});"
             cur.execute(SQL)
             conn.commit()
             total_runtime = 0
