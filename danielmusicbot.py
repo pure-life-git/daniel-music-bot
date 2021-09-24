@@ -1,3 +1,4 @@
+from _typeshed import NoneType
 import ctypes
 import asyncio
 import ctypes.util
@@ -694,10 +695,10 @@ async def settings(ctx):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
-    modIDS = [id[0] for id in cur.fetchall() if id[0] != None]
+    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) != NoneType]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if channel[0] != None]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) != NoneType]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
@@ -715,10 +716,10 @@ async def channels(ctx):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
-    modIDS = [id[0] for id in cur.fetchall() if id[0] != None]
+    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) != NoneType]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if channel[0] != None]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) != NoneType]
 
     if int(ctx.author.id) not in modIDS:
         ctx.send(":x: You must have a moderator role to use that command.")
@@ -741,10 +742,10 @@ async def add_channel(ctx, channel: discord.TextChannel):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
-    modIDS = [id[0] for id in cur.fetchall() if id[0] != None]
+    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) != NoneType]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if channel[0] != None]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) != NoneType]
 
     if int(ctx.author.id) not in modIDS:
         ctx.send(":x: You must have a moderator role to use that command.")
@@ -767,10 +768,10 @@ async def remove_channel(ctx, channel: discord.TextChannel):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
-    modIDS = [id[0] for id in cur.fetchall() if id[0] != None]
+    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) != NoneType]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if channel[0] != None]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) != NoneType]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
@@ -793,10 +794,10 @@ async def mods(ctx):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
-    modIDS = [id[0] for id in cur.fetchall() if id[0] != None]
+    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) != NoneType]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if channel[0] != None]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) != NoneType]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
@@ -820,10 +821,10 @@ async def add_mod(ctx):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
-    modIDS = [id[0] for id in cur.fetchall() if id[0] != None]
+    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) != NoneType]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if channel[0] != None]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) != NoneType]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
@@ -849,10 +850,10 @@ async def remove_mod(ctx):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
-    modIDS = [id[0] for id in cur.fetchall() if id[0] != None]
+    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) != NoneType]
 
     cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if channel[0] != None]
+    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) != NoneType]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.send(":x: You must have a moderator role to use that command.")
