@@ -934,7 +934,7 @@ async def remove(ctx, index: int):
         return
 
     song = music_queue.pop(index-1)
-    await ctx.send(f"Removed `{song[1]} - {song[2]}` queued by `{song[4].mention}`")
+    await ctx.send(f"Removed `{song[1]} - {song[2]}` queued by {song[4].mention}")
 
 @bot.command(name="nowplaying", description="Displays the song that is currently playing", aliases=["np"])
 async def nowplaying(ctx):
