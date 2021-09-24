@@ -712,6 +712,7 @@ async def settings(ctx):
         settings_embed.add_field(name="Channels", value = f"This setting allows you to add or remove channels that the bot will listen to \n `channels` - lets you view the currently whitelisted channels \n `addchannel` - adds a channel to the bots whitelist \n `removechannel` - removes a channel from the bots whitelist", inline=False)
         settings_embed.add_field(name="Mods", value = f"This setting allows you to add or remove mods that can change bot settings \n `mods` - lets you view the current list of mods \n `addmod` - lets you add a mod \n `removemod` - lets you remove a mod")
         settings_embed.add_field(name="Prefix", value = f"This setting allows you to change the prefix the bot uses for commands \n `prefix` - lets you change the bot's prefix", inline=False)
+        settings_embed.set_footer(text = "ex. `!settings addchannel #general`, `!settings prefix ?`, etc...")
         await ctx.send(embed=settings_embed)
 
 @settings.command(name="channels", description="Lets you view the currently whitelisted channels", aliases=["c"])
