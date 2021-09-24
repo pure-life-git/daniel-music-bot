@@ -871,7 +871,7 @@ async def remove_mod(ctx):
             await ctx.send(":x: This user is not a moderator.")
             return
         else:
-            SQL = f"UPDATE {server_name} SET mod = NULL WHERE mods = {int(modUser.id)};"
+            SQL = f"UPDATE {server_name} SET mods = NULL WHERE mods = {int(modUser.id)};"
             cur.execute(SQL)
             conn.commit()
             await ctx.send(f"{modUser.name} has been removed from the bot's mod list.")
