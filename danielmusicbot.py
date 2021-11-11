@@ -445,10 +445,12 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
 async def check_reminders():
     while True:
         for guild in bot.guilds:
+            print(f"Checking {guild.name}...")
             reminder_table = "r"+str(guild.id)
             SQL = f"SELECT * FROM {reminder_table};"
             cur.execute(SQL)
             reminders = cur.fetchall()
+            print(reminders)
             for reminder in [i[0] for i in reminders]:
                 if int(time.time()) >= reminder[1]:
                     reminder_id = int(reminder[0])
