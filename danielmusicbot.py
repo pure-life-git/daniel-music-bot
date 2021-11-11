@@ -402,16 +402,16 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
     cur.execute(SQL)
     conn.commit()
 
-    while True:
-        add_payload = await bot.wait_for('raw_reaction_add')
-        reactioner = add_payload.member
-        reaction_name = add_payload.emoji.name
-        await reactioner.add_roles(discord.utils.get(ctx.guild.roles, name=reaction_to_role[reaction_name]))
+    # while True:
+    #     # add_payload = await bot.wait_for('raw_reaction_add')
+    #     # reactioner = add_payload.member
+    #     # reaction_name = add_payload.emoji.name
+    #     # await reactioner.add_roles(discord.utils.get(ctx.guild.roles, name=reaction_to_role[reaction_name]))
 
-        rem_payload = await bot.wait_for('raw_reaction_remove')
-        reactioner = ctx.guild.get_member(rem_payload.user_id)
-        reaction_name = rem_payload.emoji.name
-        await reactioner.remove_roles(discord.utils.get(ctx.guild.roles, name = reaction_to_role[reaction_name]))
+    #     # rem_payload = await bot.wait_for('raw_reaction_remove')
+    #     # reactioner = ctx.guild.get_member(rem_payload.user_id)
+    #     # reaction_name = rem_payload.emoji.name
+    #     # await reactioner.remove_roles(discord.utils.get(ctx.guild.roles, name = reaction_to_role[reaction_name]))
 
 @tasks.loop(seconds=5, loop = bot.loop)
 async def check_reminders():
@@ -463,7 +463,7 @@ async def on_raw_reaction_add(payload):
     if message_id in react_mess_ids:
         SQL = f"SELECT role_names FROM {message_table} WHERE mess_id = {message_id};"
         cur.execute(SQL)
-        role_list = cur.fetchall()[0].split(';')
+        role_list = cur.fetchone()[0].split(';')
 
         reaction_to_role = {}
         for count, role in enumerate(role_list):
