@@ -27,9 +27,9 @@ DEFAULT_PREFIX = "?"
 TIME_TABLE = {
     "s": 1,
     "m": 60,
-    "h": 60*60,
-    "d": 60*60*24,
-    "w": 60*60*24*7
+    "h": 3600,
+    "d": 86400,
+    "w": 604800
 }
 
 ROLE_EMOTES = [
@@ -382,7 +382,7 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
     reminder_id = random.randint(10000, 99999)
 
     # execution_time = datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(0,secs)
-    execution_time = datetime.datetime.today().timestamp() + secs
+    execution_time = int(time.time()+secs)
 
     SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, role_id, repeat, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, {role.id}, {repeat}, '{reminder_message}');"
     cur.execute(SQL)
