@@ -374,7 +374,7 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
     
     reminder_message = " ".join(args)
 
-    secs = int(duration[:-1]*TIME_TABLE[duration[-1]])
+    secs = int(int(duration[:-1])*TIME_TABLE[duration[-1]])
     print(secs)
 
     reminder_table = "r" + str(ctx.guild.id)
