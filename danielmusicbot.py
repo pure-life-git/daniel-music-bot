@@ -516,8 +516,6 @@ async def check_reminders():
         cur.execute(SQL)
         reminders = cur.fetchall()
         for reminder in reminders:
-            print(reminder)
-            print(int(time.time()))
             if int(time.time()) >= reminder[1]:
                 reminder_id = int(reminder[0])
                 execution_time = reminder[1]
@@ -530,7 +528,7 @@ async def check_reminders():
                 await channel.send(content = f"`[{reminder_id}]` {role.mention}: {reminder_message}")
 
                 if repeat:
-                    SQL = f"UPDATE {reminder_table} SET execution_time = {execution_time+duration} WHERE reminder_id = {reminder_id};"
+                    SQL = f"UPDATE {reminder_table} SET execution_time = {int(time.time()+duration)} WHERE reminder_id = {reminder_id};"
                     cur.execute(SQL)
                     conn.commit()
 
