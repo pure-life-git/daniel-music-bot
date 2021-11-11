@@ -11,7 +11,7 @@ import discord
 from discord import colour
 from discord import permissions
 from discord.errors import ClientException
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ext.commands.errors import CommandOnCooldown
 from discord.player import FFmpegPCMAudio
 
@@ -510,8 +510,8 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
         reaction_name = rem_payload.emoji.name
         await reactioner.removes_roles(discord.utils.get(ctx.guild.roles, name = reaction_to_role[reaction_name]))
 
+@tasks.loop(seconds=10)
 async def check_reminders():
-    while True:
         for guild in bot.guilds:
             reminder_table = "r"+str(guild.id)
             SQL = f"SELECT * FROM {reminder_table};"
