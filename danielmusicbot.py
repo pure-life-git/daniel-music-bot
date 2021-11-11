@@ -512,27 +512,27 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
 
 @tasks.loop(seconds=10)
 async def check_reminders():
-        for guild in bot.guilds:
-            reminder_table = "r"+str(guild.id)
-            SQL = f"SELECT * FROM {reminder_table};"
-            cur.execute(SQL)
-            reminders = cur.fetchall()
-            for reminder in reminders:
-                if int(time.time()) >= reminder[1]:
-                    reminder_id = int(reminder[0])
-                    execution_time = reminder[1]
-                    channel = guild.get_channel(reminder[2])
-                    role = guild.get_role(reminder[3])
-                    reminder_message = str(reminder[4])
-                    duration = int(reminder[5])
-                    repeat = bool(reminder[6])
+    for guild in bot.guilds:
+        reminder_table = "r"+str(guild.id)
+        SQL = f"SELECT * FROM {reminder_table};"
+        cur.execute(SQL)
+        reminders = cur.fetchall()
+        for reminder in reminders:
+            if int(time.time()) >= reminder[1]:
+                reminder_id = int(reminder[0])
+                execution_time = reminder[1]
+                channel = guild.get_channel(reminder[2])
+                role = guild.get_role(reminder[3])
+                reminder_message = str(reminder[4])
+                duration = int(reminder[5])
+                repeat = bool(reminder[6])
 
-                    await channel.send(content = f"`[{reminder_id}]` {role}: {reminder_message}")
+                await channel.send(content = f"`[{reminder_id}]` {role}: {reminder_message}")
 
-                    if repeat:
-                        SQL = f"UPDATE {reminder_table} SET execution_time = {execution_time+duration} WHERE reminder_id = {reminder_id};"
-                        cur.execute(SQL)
-                        conn.commit()
+                if repeat:
+                    SQL = f"UPDATE {reminder_table} SET execution_time = {execution_time+duration} WHERE reminder_id = {reminder_id};"
+                    cur.execute(SQL)
+                    conn.commit()
 
 
 
