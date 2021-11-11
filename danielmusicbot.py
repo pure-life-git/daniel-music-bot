@@ -533,7 +533,10 @@ async def check_reminders():
                     cur.execute(SQL)
                     conn.commit()
 
-
+@check_reminders.before_loop
+async def before_check():
+    print("waiting...")
+    await bot.wait_until_ready()
 
 @bot.event
 async def on_guild_join(guild):
