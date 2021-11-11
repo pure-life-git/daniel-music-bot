@@ -68,6 +68,7 @@ async def help(ctx):
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
     await bot.change_presence(status = discord.Status.online, activity=discord.Game("?help"))
+    check_reminders.start()
 
 @bot.group(name="settings", description="Allows an admin to change the settings of the bot", invoke_without_command=True)
 async def settings(ctx):
@@ -526,7 +527,7 @@ async def check_reminders():
                 duration = int(reminder[5])
                 repeat = bool(reminder[6])
 
-                await channel.send(content = f"`[{reminder_id}]` {role}: {reminder_message}")
+                await channel.send(content = f"`[{reminder_id}]` {role.mention}: {reminder_message}")
 
                 if repeat:
                     SQL = f"UPDATE {reminder_table} SET execution_time = {execution_time+duration} WHERE reminder_id = {reminder_id};"
