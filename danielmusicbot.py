@@ -354,8 +354,8 @@ async def change_prefix(ctx, prefix):
         await ctx.send(f"Prefix successfully changed to `{prefix}`.")
         return
 
-@bot.command(name="reminder", description="Lets you set a reminder")
-async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, time:str, *args):
+@bot.command(name="reminder", description="Lets you set a reminder", aliases=["r"])
+async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:bool ,time:str, *args):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
@@ -375,12 +375,23 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, time:str
 
     secs = int(time[:-1]*TIME_TABLE[time[-1]])
 
-    await ctx.send(f":white_check_mark: Reminder Set! Will remind {role} of `{reminder_message}` in `{time}`.")
-    await asyncio.sleep(secs)
-    await channel.send(f"{role.mention}: {reminder_message}")
+    reminder_table = "r" + str(ctx.guild.id)
 
-@bot.command
-async def role_select(ctx, channel:discord.TextChannel, **roles):
+    reminder_id = random.randint(10000, 99999)
+
+    execution_time = datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(0,secs)
+
+    SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, role_id, repeat, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, {role.id}, {repeat}, '{reminder_message}');"
+    cur.execute(SQL)
+    conn.commit()
+
+    await ctx.send(f":white_check_mark: `[{reminder_id}]` Reminder Set! Will remind {role} of `{reminder_message}` in `{time}`.")
+    # while True:
+    #     await asyncio.sleep(secs)
+    #     await channel.send(f"{role}: {reminder_message}")
+
+@bot.command(name="roleselect", description="Lets people assign themselves roles by reacting to a message.", aliases=["rs"])
+async def role_select(ctx, channel:discord.TextChannel, *roles):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
@@ -426,8 +437,13 @@ async def on_guild_join(guild):
     await main_channel.send(f":wave: Thanks for welcoming me to `{guild.name}`! My default prefix is `?`. You can change this with `?settings`.")
 
     server_name = "t"+str(guild.id)
+    reminder_name = "r"+str(guild.id)
 
     SQL = f"CREATE TABLE {server_name} (channels bigint, mods bigint, prefix varchar(255));"
+    cur.execute(SQL)
+    conn.commit()
+
+    SQL = f"CREATE TABLE {reminder_name} (reminder_id bigint, execution_time timestamptz, channel_id bigint, role_id bigint, message text, repeat boolean);"
     cur.execute(SQL)
     conn.commit()
 
