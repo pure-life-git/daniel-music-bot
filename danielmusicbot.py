@@ -355,7 +355,7 @@ async def change_prefix(ctx, prefix):
         return
 
 @bot.command(name="reminder", description="Lets you set a reminder")
-async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, time:str, args):
+async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, time:str, *args):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
@@ -371,11 +371,11 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, time:str
         await ctx.send("Second argument must be a mentioned role.")
         return
     
-    reminder_message = args
+    reminder_message = " ".join(args)
 
     secs = int(time[:-1]*TIME_TABLE[time[-1]])
 
-    await ctx.send(f":white_check_mark: Reminder Set! Will remind {role.mention} of `{reminder_message}` in `{time}`.")
+    await ctx.send(f":white_check_mark: Reminder Set! Will remind {role} of `{reminder_message}` in `{time}`.")
     await asyncio.sleep(secs)
     await channel.send(f"{role.mention}: {reminder_message}")
 
