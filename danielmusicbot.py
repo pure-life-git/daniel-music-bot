@@ -437,13 +437,13 @@ async def reminders(ctx):
         duration = int(reminder[5])
         repeat = bool(reminder[6])
 
-        days = str(math.floor(duration / (3600*24))) if math.floor(duration / (3600*24)) > 0 else 0
+        days = math.floor(duration / (3600*24)) if math.floor(duration / (3600*24)) > 0 else 0
         duration -= days * 3600 * 24
-        hours = str(math.floor(duration / 3600)) if math.floor(duration / 3600) > 0 else 0
+        hours = math.floor(duration / 3600) if math.floor(duration / 3600) > 0 else 0
         duration -= hours * 3600
-        minutes = str(math.floor(duration / 60)) if math.floor(duration / 60) > 0 else 0
+        minutes = math.floor(duration / 60) if math.floor(duration / 60) > 0 else 0
         duration -= minutes * 60
-        duration = str(duration) if duration > 0 else 0
+        duration = duration if duration > 0 else 0
 
 
         
