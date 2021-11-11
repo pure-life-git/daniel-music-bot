@@ -507,7 +507,7 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
         reaction_name = rem_payload.emoji.name
         await reactioner.removes_roles(discord.utils.get(ctx.guild.roles, name = reaction_to_role[reaction_name]))
 
-@tasks.loop(seconds=10)
+@tasks.loop(seconds=10, loop = bot.loop)
 async def check_reminders():
     for guild in bot.guilds:
         reminder_table = "r"+str(guild.id)
