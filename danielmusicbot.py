@@ -33,10 +33,10 @@ TIME_TABLE = {
 }
 
 ROLE_EMOTES = [
-    ":red_circle:", ":orange_circle:", ":yellow_circle:", ":green_circle:", ":blue_circle:", 
-    ":purple_circle:", ":brown_circle:", ":black_circle:", ":white_circle:", ":red_heart:",
-    ":orange_heart:", ":yellow_heart:", ":green_heart:", ":blue_heart:", ":purple_heart:",
-    ":brown_heart:", ":black_heart:", ":white_heart:", ":black_square_button:", ":white_square_button:"
+    "🔴", "🟠", "🟡", "🟢", "🔵", 
+    "🟣", "🟤", "⚫", "⚪", "❤",
+    "🧡", "💛", "💚", "💙", "💜",
+    "🤎", "🖤", "🤍", "🔲", "🔳"
     
     ]
 
@@ -420,8 +420,8 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
     for count, role_name in enumerate(roles):
         if role_name not in server_roles:
             await ctx.guild.create_role(name=role_name, color=bot_color, reason="Created by `role_select` command.")
-        role_select_embed.add_field(name = f"{ROLE_EMOTES[count]} - {role_name}", value = f"Click the {ROLE_EMOTES[count]} to gain the role {role_name}.")
-        reaction_to_role[ROLE_EMOTES[count][1:-1]] = role_name
+        role_select_embed.add_field(name = f"{ROLE_EMOTES[count]} - {role_name}", value = f"Click the {ROLE_EMOTES[count]} to gain the role {role_name}.", inline=False)
+        reaction_to_role[ROLE_EMOTES[count]] = role_name
     
     react_message = await channel.send(embed=role_select_embed)
 
@@ -429,7 +429,7 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
     print(reaction_to_role.keys())
 
     for emoji in reaction_to_role:
-        await react_message.add_reaction(discord.utils.get(ctx.guild.emojis, name = emoji))
+        await react_message.add_reaction(emoji)
 
     while True:
         payload = await bot.wait_for('raw_reaction_add')
