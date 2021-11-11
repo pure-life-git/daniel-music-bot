@@ -2,6 +2,7 @@ import ctypes
 import asyncio
 import ctypes.util
 import datetime
+import time
 import math
 import os
 import random
@@ -355,7 +356,7 @@ async def change_prefix(ctx, prefix):
         return
 
 @bot.command(name="reminder", description="Lets you set a reminder", aliases=["r"])
-async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:bool ,time:str, *args):
+async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:bool ,duration:str, *args):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
@@ -373,19 +374,21 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
     
     reminder_message = " ".join(args)
 
-    secs = int(time[:-1]*TIME_TABLE[time[-1]])
+    secs = int(duration[:-1]*TIME_TABLE[duration[-1]])
+    print(secs)
 
     reminder_table = "r" + str(ctx.guild.id)
 
     reminder_id = random.randint(10000, 99999)
 
-    execution_time = datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(0,secs)
+    # execution_time = datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(0,secs)
+    execution_time = int(time.time()+secs)
 
     SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, role_id, repeat, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, {role.id}, {repeat}, '{reminder_message}');"
     cur.execute(SQL)
     conn.commit()
 
-    await ctx.send(f":white_check_mark: `[{reminder_id}]` Reminder Set! Will remind {role} of `{reminder_message}` in `{time}`.")
+    await ctx.send(f":white_check_mark: `[{reminder_id}]` Reminder Set! Will remind {role} of `{reminder_message}` in `{duration}`.")
     # while True:
     #     await asyncio.sleep(secs)
     #     await channel.send(f"{role}: {reminder_message}")
@@ -443,7 +446,7 @@ async def on_guild_join(guild):
     cur.execute(SQL)
     conn.commit()
 
-    SQL = f"CREATE TABLE {reminder_name} (reminder_id bigint, execution_time timestamptz, channel_id bigint, role_id bigint, message text, repeat boolean);"
+    SQL = f"CREATE TABLE {reminder_name} (reminder_id bigint, execution_time bigint, channel_id bigint, role_id bigint, message text, repeat boolean);"
     cur.execute(SQL)
     conn.commit()
 
@@ -464,12 +467,17 @@ async def on_guild_join(guild):
 @bot.event
 async def on_guild_remove(guild):
     server_name = "t"+str(guild.id)
+    reminder_table = "r"+str(guild.id)
     
     SQL = f"DELETE FROM prefixes WHERE server_id={guild.id};"
     cur.execute(SQL)
     conn.commit()
     
     SQL = f"DROP TABLE {server_name};"
+    cur.execute(SQL)
+    conn.commit()
+
+    SQL = f"DROP TABLE {reminder_table};"
     cur.execute(SQL)
     conn.commit()
     
