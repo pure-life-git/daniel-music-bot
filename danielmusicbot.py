@@ -450,7 +450,7 @@ async def check_reminders():
             cur.execute(SQL)
             reminders = cur.fetchall()
             for reminder in [i[0] for i in reminders]:
-                if int(time.time()) == reminder[1]:
+                if int(time.time()) >= reminder[1]:
                     reminder_id = int(reminder[0])
                     execution_time = reminder[1]
                     channel = guild.get_channel(reminder[2])
