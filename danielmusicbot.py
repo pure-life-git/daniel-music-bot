@@ -366,6 +366,7 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
     if int(ctx.author.id) not in modIDS:
         await ctx.message.delete()
         await ctx.send(":x: You must have a moderator role to use that command.")
+        return
     elif not isinstance(channel, discord.TextChannel):
         await ctx.send("First argument must be a mentioned text channel.")
         return
@@ -393,6 +394,74 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
     # while True:
     #     await asyncio.sleep(secs)
     #     await channel.send(f"{role}: {reminder_message}")
+
+@bot.command(name = "deletereminder", description="Lets you delete a reminder", aliases=["dr"])
+async def delete_reminder(ctx, reminder_id:int):
+    server_name = "t"+str(ctx.guild.id)
+    reminder_table = "r"+(ctx.guild.id)
+
+
+    cur.execute(f"SELECT mods FROM {server_name};")
+    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
+
+    cur.execute(f"SELECT reminder_id FROM {reminder_table};")
+    reminder_ids = [i[0] for i in cur.fetchall() if type(id[0]) is int]
+
+    if int(ctx.author.id) not in modIDS:
+        await ctx.message.delete()
+        await ctx.send(":x: You must have a moderator role to use that ocmmand.")
+        return
+    elif reminder_id not in reminder_ids:
+        await ctx.send(":x: That is not a valid reminder id.")
+        return
+    
+    SQL = f"DELETE FROM {reminder_table} WHERE reminder_id = {reminder_id};"
+    cur.execute(SQL)
+    conn.commit()
+
+    await ctx.send(f"Reminder `#{reminder_id}` successfully deleted.")
+
+@bot.command(name = "reminders", description = "Lets you view the currently active reminders")
+async def reminders(ctx):
+    reminder_table = "r"+str(ctx.guild.id)
+
+    cur.execute(f"SELECT * FROM {reminder_table};")
+    reminders = cur.fetchall()
+
+    reminder_embed = discord.Embed(title = f"{ctx.guild.name}'s Reminders", description = f"Currently active reminders for {ctx.guild.name}", color = bot_color)
+
+    for reminder in reminders:
+        reminder_id = reminder[0]
+        execution_time = reminder[1]
+        channel = ctx.guild.get_channel(reminder[2])
+        role = ctx.guild.get_role(reminder[3])
+        reminder_message = str(reminder[4])
+        duration = int(reminder[5])
+        repeat = bool(reminder[6])
+
+        days = str(math.floor(duration / (3600*24)))+"d" if math.floor(duration / (3600*24)) > 0 else ""
+        duration -= days * 3600 * 24
+        hours = str(math.floor(duration / 3600))+"h" if math.floor(duration / 3600) > 0 else ""
+        duration -= hours * 3600
+        minutes = str(math.floor(duration / 60))+"m" if math.floor(duration / 60) > 0 else ""
+        duration -= minutes * 60
+        duration = str(duration) + "s" if duration > 0 else ""
+
+
+        
+
+        description = f"""Channel: {channel}
+        Role: {role}
+        Time Between Reminders: {days}{hours}{minutes}{duration}
+        Next Reminder: {datetime.datetime.fromtimestamp(execution_time)}
+        Repeating: {repeat}
+        """
+
+        reminder_embed.add_field(name = f"`[{reminder_id}]`: {reminder_message}", description = description)
+    
+    await ctx.send(embed = reminder_embed)
+
+
 
 @bot.command(name="roleselect", description="Lets people assign themselves roles by reacting to a message.", aliases=["rs"])
 async def role_select(ctx, channel:discord.TextChannel, title="Role Select", descr="Pick a Role!", *roles):
