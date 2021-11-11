@@ -58,10 +58,10 @@ bot_color = discord.Color.from_rgb(81,193,177)
 async def help(ctx):
     cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
     cur_prefix = cur.fetchone()[0]
-    helpEmbed = discord.Embed(title = "Dorg Bot Help", description = f"The prefix of the bot is `{cur_prefix}`", color = bot_color)
-    helpEmbed.add_field(name = ":musical_note: **Music - 8**", value = "`play`, `skip`, `clear`, `queue`, `leave`, `shuffle`, `repeat`, `ignore`")
+    helpEmbed = discord.Embed(title = "K-Scope Bot Help", description = f"The prefix of the bot is `{cur_prefix}`", color = bot_color)
+    helpEmbed.add_field(name = ":alarm_clock: **Reminders - 3**", value = "`reminder (r)`, `deletereminder (dr)`, `reminders`")
     helpEmbed.add_field(name = ":gear: **Settings**", value = "`settings`", inline = False)
-    helpEmbed.set_footer(text = "For more information try .help (command) or .help (category), ex: .help play or .help settings")
+    helpEmbed.set_footer(text = f"For more information try {cur_prefix}help (command) or {cur_prefix}help (category), ex: {cur_prefix}help reminder, {cur_prefix}help settings, etc.")
     await ctx.send(embed=helpEmbed)
 
 @bot.event
@@ -73,6 +73,8 @@ async def on_ready():
 @bot.group(name="settings", description="Allows an admin to change the settings of the bot", invoke_without_command=True)
 async def settings(ctx):
     server_name = "t"+str(ctx.guild.id)
+    cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
+    cur_prefix = cur.fetchone()[0]
 
     cur.execute(f"SELECT mods FROM {server_name};")
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
@@ -92,113 +94,11 @@ async def settings(ctx):
         await mess.delete()
         return
     else:
-        settings_embed = discord.Embed(title = "Settings", description = "", color=bot_color)
-        settings_embed.add_field(name="Channels", value = f"This setting allows you to add or remove channels that the bot will listen to \n `channels` - lets you view the currently whitelisted channels \n `addchannel` - adds a channel to the bots whitelist \n `removechannel` - removes a channel from the bots whitelist", inline=False)
+        settings_embed = discord.Embed(title = "K-Scope Bot Settings", description = f"The prefix of the bot is `{cur_prefix}`", color=bot_color)
         settings_embed.add_field(name="Mods", value = f"This setting allows you to add or remove mods that can change bot settings \n `mods` - lets you view the current list of mods \n `addmod` - lets you add a mod \n `removemod` - lets you remove a mod")
         settings_embed.add_field(name="Prefix", value = f"This setting allows you to change the prefix the bot uses for commands \n `prefix` - lets you change the bot's prefix", inline=False)
-        settings_embed.set_footer(text = "ex. `!settings addchannel #general`, `!settings prefix ?`, etc...")
+        settings_embed.set_footer(text = f"ex. `{cur_prefix}settings prefix`, etc...")
         await ctx.send(embed=settings_embed)
-
-@settings.command(name="channels", description="Lets you view the currently whitelisted channels", aliases=["c"])
-async def channels(ctx):
-    server_name = "t"+str(ctx.guild.id)
-
-    cur.execute(f"SELECT mods FROM {server_name};")
-    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
-
-    cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
-
-    if int(ctx.author.id) not in modIDS:
-        await ctx.message.delete()
-        await ctx.send(":x: You must have a moderator role to use that command.")
-        await asyncio.sleep(5)
-        return
-    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
-        await ctx.message.delete()
-        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
-        await asyncio.sleep(5)
-        await mess.delete()
-        return
-    elif len(channelWhitelist) == 0:
-        await ctx.send(":x: No channels are whitelisted. Commands can be accepted from any channel.")
-        return
-    else:
-        channelEmbed = discord.Embed(title="Channel Whitelist", description = "", color=bot_color)
-        for channelID in channelWhitelist:
-            channel = bot.get_channel(channelID)
-            channelEmbed.add_field(name=channel.name, value=":white_circle: This channel is whitelisted", inline=False)
-
-        await ctx.send(embed=channelEmbed)
-        return
-        
-@settings.command(name="addchannel", description="Lets you add a channel to the whitelist", aliases=["ac"])
-async def add_channel(ctx, channel: discord.TextChannel):
-    server_name = "t"+str(ctx.guild.id)
-
-    cur.execute(f"SELECT mods FROM {server_name};")
-    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
-
-    cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
-
-    if int(ctx.author.id) not in modIDS:
-        await ctx.message.delete()
-        await ctx.send(":x: You must have a moderator role to use that command.")
-        await asyncio.sleep(5)
-        return
-    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
-        await ctx.message.delete()
-        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
-        await asyncio.sleep(5)
-        await mess.delete()
-        return
-    elif channel not in ctx.guild.text_channels:
-        await ctx.send(":x: That is not a valid text channel.")
-        return
-    elif channel.id in channelWhitelist:
-        await ctx.send(":x: That channel is already in the bot's whitelist.")
-        return
-    else:
-        SQL = f"INSERT INTO {server_name}(channels) VALUES ({int(channel.id)});"
-        cur.execute(SQL)
-        conn.commit()
-        await ctx.send(f"`{channel.name}` has been added to the bot's whitelist.")
-        return
-
-@settings.command(name="removechannel", description="Lets you remove a channel from the whitelist", aliases=["rc"])
-async def remove_channel(ctx, channel: discord.TextChannel):
-    server_name = "t"+str(ctx.guild.id)
-
-    cur.execute(f"SELECT mods FROM {server_name};")
-    modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
-
-    cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
-
-    if int(ctx.author.id) not in modIDS:
-        await ctx.message.delete()
-        await ctx.send(":x: You must have a moderator role to use that command.")
-        await asyncio.sleep(5)
-        return
-    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
-        await ctx.message.delete()
-        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
-        await asyncio.sleep(5)
-        await mess.delete()
-        return
-    elif channel not in ctx.guild.text_channels:
-        await ctx.send(":x: That is not a valid text channel.")
-        return
-    elif (channel.id,) not in channelWhitelist:
-        await ctx.send(":x: That channel is not currently on the bot's whitelist.")
-        return
-    else:
-        SQL = f"UPDATE {server_name} SET channel = NULL WHERE channel = {int(channel.id)};"
-        cur.execute(SQL)
-        conn.commit()
-        await ctx.send(f"`{channel.name}` has been removed from the bot's whitelist.")
-        return
 
 @settings.command(name="mods", description = "Lets you view the current mods", aliases=["m"])
 async def mods(ctx):
@@ -465,6 +365,7 @@ async def reminders(ctx):
 @bot.command(name="roleselect", description="Lets people assign themselves roles by reacting to a message.", aliases=["rs"])
 async def role_select(ctx, channel:discord.TextChannel, title="Role Select", descr="Pick a Role!", *roles):
     server_name = "t"+str(ctx.guild.id)
+    message_table = "m"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
@@ -496,6 +397,10 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
 
     for emoji in reaction_to_role:
         await react_message.add_reaction(emoji)
+
+    SQL = f"INSERT INTO {message_table} VALUES ({react_message.id}, {reaction_to_role.values()});"
+    cur.execute(SQL)
+    conn.commit()
 
     while True:
         add_payload = await bot.wait_for('raw_reaction_add')
@@ -538,12 +443,40 @@ async def before_check():
     await bot.wait_until_ready()
 
 @bot.event
+async def on_raw_reaction_add(payload):
+    guild = bot.get_guild(payload.guild_id)
+    reactioner = guild.get_member(payload.user_id)
+    if reactioner.bot():
+        return
+    
+    channel = guild.get_channel(payload.channel_id)
+    emoji = payload.emoji.name
+    message_id = payload.message_id
+
+    message_table = "m"+str(guild.id)
+
+    SQL = f"SELECT mess_id FROM {message_table};"
+    cur.execute(SQL)
+
+    react_mess_ids = [i[0] for i in cur.fetchall() if type(i[0]) is not None]
+
+    if message_id in react_mess_ids:
+        SQL = f"SELECT role_names FROM {message_table} WHERE mess_id = {message_id};"
+        cur.execute(SQL)
+        role_list = [discord.utils.get(guild.roles, name = i[0]) for i in cur.fetchall()]
+        print(role_list)
+
+        # reactioner.add_roles(discord.utils.get(guild.roles, name = ))
+
+
+@bot.event
 async def on_guild_join(guild):
     main_channel = guild.text_channels[0]
     await main_channel.send(f":wave: Thanks for welcoming me to `{guild.name}`! My default prefix is `?`. You can change this with `?settings`.")
 
     server_name = "t"+str(guild.id)
     reminder_name = "r"+str(guild.id)
+    message_name = "m"+str(guild.id)
 
     SQL = f"CREATE TABLE {server_name} (channels bigint, mods bigint, prefix varchar(255));"
     cur.execute(SQL)
@@ -553,16 +486,25 @@ async def on_guild_join(guild):
     cur.execute(SQL)
     conn.commit()
 
+    SQL = f"CREATE TABLE {message_name} (mess_id bigint, role_names text[]);"
+    cur.execute(SQL)
+    conn.commit()
+
     SQL = f"INSERT INTO prefixes(server_id,prefix) VALUES ({guild.id}, '{DEFAULT_PREFIX}');"
     cur.execute(SQL)
     conn.commit()
+
+    mod_ids = []
 
     SQL = f"INSERT INTO {server_name}(mods) VALUES (288710564367171595);"
     cur.execute(SQL)
     conn.commit()
 
+    mod_ids.append(288710564367171595)
+
     for member in guild.members:
-        if member.top_role.permissions.administrator:
+        if member.top_role.permissions.administrator and int(member.id) not in mod_ids and not member.bot:
+            mod_ids.append(int(member.id))
             SQL = f"INSERT INTO {server_name}(mods) VALUES ({int(member.id)});"
             cur.execute(SQL)
             conn.commit()
@@ -571,6 +513,7 @@ async def on_guild_join(guild):
 async def on_guild_remove(guild):
     server_name = "t"+str(guild.id)
     reminder_table = "r"+str(guild.id)
+    message_table = "m"+str(guild.id)
     
     SQL = f"DELETE FROM prefixes WHERE server_id={guild.id};"
     cur.execute(SQL)
@@ -581,6 +524,10 @@ async def on_guild_remove(guild):
     conn.commit()
 
     SQL = f"DROP TABLE {reminder_table};"
+    cur.execute(SQL)
+    conn.commit()
+
+    SQL = f"DROP TABLE {message_table};"
     cur.execute(SQL)
     conn.commit()
     
