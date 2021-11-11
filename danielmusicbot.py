@@ -472,7 +472,7 @@ async def on_raw_reaction_add(payload):
         await reactioner.add_roles(discord.utils.get(guild.roles, name=reaction_to_role[emoji]))
 
 @bot.event
-async def on_raw_reaction_delete(payload):
+async def on_raw_reaction_remove(payload):
     guild = bot.get_guild(payload.guild_id)
     reactioner = guild.get_member(payload.user_id)
     if reactioner.bot:
@@ -514,7 +514,7 @@ async def on_raw_message_delete(payload):
         SQL = f"DELETE FROM {message_table} WHERE mess_id = {message_id};"
         cur.execute(SQL)
         conn.commit()
-        
+
 
 @bot.event
 async def on_guild_join(guild):
