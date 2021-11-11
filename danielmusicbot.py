@@ -68,9 +68,6 @@ async def help(ctx):
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
     await bot.change_presence(status = discord.Status.online, activity=discord.Game("?help"))
-    loop = asyncio.get_event_loop()
-    loop.create_task(check_reminders())
-    await check_reminders()
 
 @bot.group(name="settings", description="Allows an admin to change the settings of the bot", invoke_without_command=True)
 async def settings(ctx):
