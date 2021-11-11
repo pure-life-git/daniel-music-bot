@@ -384,7 +384,7 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
     # execution_time = datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(0,secs)
     execution_time = int(time.time()+secs)
 
-    SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, role_id, repeat, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, {role.id}, {repeat}, '{reminder_message}');"
+    SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, role_id, repeat, message, duration) VALUES ({reminder_id}, {execution_time}, {channel.id}, {role.id}, {repeat}, '{reminder_message}', {secs});"
     cur.execute(SQL)
     conn.commit()
 
@@ -440,10 +440,33 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
         rem_payload = await bot.wait_for('raw_reaction_remove')
         reactioner = rem_payload.member
         reaction_name = rem_payload.emoji.name
-        await reactioner.removes_roles(discord.utils.get(ctx.guild.rols, name = reaction_to_role[reaction_name]))
+        await reactioner.removes_roles(discord.utils.get(ctx.guild.roles, name = reaction_to_role[reaction_name]))
 
-        
-        
+async def check_reminders():
+    while True:
+        for guild in bot.guilds:
+            reminder_table = "r"+str(guild.id)
+            SQL = f"SELECT * FROM {reminder_table};"
+            cur.execute(SQL)
+            reminders = cur.fetchall()
+            for reminder in [i[0] for i in reminders]:
+                if int(time.time()) == reminder[1]:
+                    reminder_id = int(reminder[0])
+                    execution_time = reminder[1]
+                    channel = guild.get_channel(reminder[2])
+                    role = guild.get_role(reminder[3])
+                    reminder_message = str(reminder[4])
+                    duration = int(reminder[5])
+                    repeat = bool(reminder[6])
+
+                    await channel.send(content = f"`[{reminder_id}]` {role}: {reminder_message}")
+
+                    if repeat:
+                        SQL = f"UPDATE {reminder_table} SET execution_time = {execution_time+duration} WHERE reminder_id = {reminder_id};"
+                        cur.execute(SQL)
+                        conn.commit()
+
+
 
 @bot.event
 async def on_guild_join(guild):
@@ -457,7 +480,7 @@ async def on_guild_join(guild):
     cur.execute(SQL)
     conn.commit()
 
-    SQL = f"CREATE TABLE {reminder_name} (reminder_id bigint, execution_time bigint, channel_id bigint, role_id bigint, message text, repeat boolean);"
+    SQL = f"CREATE TABLE {reminder_name} (reminder_id bigint, execution_time bigint, channel_id bigint, role_id bigint, message text, duration bigint, repeat boolean);"
     cur.execute(SQL)
     conn.commit()
 
