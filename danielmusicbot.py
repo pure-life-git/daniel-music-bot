@@ -421,7 +421,7 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
         if role_name not in server_roles:
             await ctx.guild.create_role(name=role_name, color=bot_color, reason="Created by `role_select` command.")
         role_select_embed.add_field(name = f"{ROLE_EMOTES[count]} - {role_name}", value = f"Click the {ROLE_EMOTES[count]} to gain the role {role_name}.")
-        reaction_to_role[ROLE_EMOTES[count]] = role_name
+        reaction_to_role[ROLE_EMOTES[count][1:-1]] = role_name
     
     react_message = await channel.send(embed=role_select_embed)
 
