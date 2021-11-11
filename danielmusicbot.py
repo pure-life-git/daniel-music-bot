@@ -455,7 +455,7 @@ async def reminders(ctx):
         Repeating: {repeat}
         """
 
-        reminder_embed.add_field(name = f"`[{reminder_id}]`: {reminder_message}", description = description)
+        reminder_embed.add_field(name = f"`[{reminder_id}]`: {reminder_message}", value = description, inline=False)
     
     await ctx.send(embed = reminder_embed)
 
