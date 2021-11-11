@@ -452,7 +452,7 @@ async def check_reminders():
             cur.execute(SQL)
             reminders = cur.fetchall()
             print(reminders)
-            for reminder in [i[0] for i in reminders]:
+            for reminder in reminders:
                 if int(time.time()) >= reminder[1]:
                     reminder_id = int(reminder[0])
                     execution_time = reminder[1]
