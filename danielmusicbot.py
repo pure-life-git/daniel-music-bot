@@ -68,6 +68,8 @@ async def help(ctx):
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
     await bot.change_presence(status = discord.Status.online, activity=discord.Game("?help"))
+    loop = asyncio.get_event_loop()
+    loop.create_task(check_reminders())
     await check_reminders()
 
 @bot.group(name="settings", description="Allows an admin to change the settings of the bot", invoke_without_command=True)
@@ -377,7 +379,6 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
     reminder_message = " ".join(args)
 
     secs = int(int(duration[:-1])*TIME_TABLE[duration[-1]])
-    print(secs)
 
     reminder_table = "r" + str(ctx.guild.id)
 
@@ -494,9 +495,6 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
         reaction_to_role[ROLE_EMOTES[count]] = role_name
     
     react_message = await channel.send(embed=role_select_embed)
-
-    print(reaction_to_role)
-    print(reaction_to_role.keys())
 
     for emoji in reaction_to_role:
         await react_message.add_reaction(emoji)
