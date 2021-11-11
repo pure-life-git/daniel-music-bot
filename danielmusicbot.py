@@ -354,7 +354,7 @@ async def change_prefix(ctx, prefix):
         await ctx.send(f"Prefix successfully changed to `{prefix}`.")
         return
 
-@bot.command
+@bot.command(name="reminder", description="Lets you set a reminder")
 async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, time:str, **args):
     server_name = "t"+str(ctx.guild.id)
 
