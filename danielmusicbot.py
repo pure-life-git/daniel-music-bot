@@ -428,8 +428,8 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
     print(reaction_to_role)
     print(reaction_to_role.keys()[0])
 
-    for emoji in reaction_to_role.keys()[0]:
-        await react_message.add_reaction(emoji)
+    for emoji in reaction_to_role:
+        await react_message.add_reaction(discord.utils.get(ctx.guild.emojis, name = emoji))
 
     while True:
         payload = await bot.wait_for('raw_reaction_add')
