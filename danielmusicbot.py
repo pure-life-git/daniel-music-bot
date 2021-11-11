@@ -468,11 +468,53 @@ async def on_raw_reaction_add(payload):
         reaction_to_role = {}
         for count, role in enumerate(role_list):
             reaction_to_role[ROLE_EMOTES[count]] = role
-        print(role_list)
 
         await reactioner.add_roles(discord.utils.get(guild.roles, name=reaction_to_role[emoji]))
 
+@bot.event
+async def on_raw_reaction_delete(payload):
+    guild = bot.get_guild(payload.guild_id)
+    reactioner = guild.get_member(payload.user_id)
+    if reactioner.bot:
+        return
+    
+    channel = guild.get_channel(payload.channel_id)
+    emoji = payload.emoji.name
+    message_id = payload.message_id
 
+    message_table = "m"+str(guild.id)
+
+    SQL = f"SELECT mess_id FROM {message_table};"
+    cur.execute(SQL)
+
+    react_mess_ids = [i[0] for i in cur.fetchall() if type(i[0]) is not None]
+
+    if message_id in react_mess_ids:
+        SQL = f"SELECT role_names FROM {message_table} WHERE mess_id = {message_id};"
+        cur.execute(SQL)
+        role_list = cur.fetchone()[0].split(';')
+
+        reaction_to_role = {}
+        for count, role in enumerate(role_list):
+            reaction_to_role[ROLE_EMOTES[count]] = role
+
+        await reactioner.remove_roles(discord.utils.get(guild.roles, name=reaction_to_role[emoji]))
+
+@bot.event
+async def on_raw_message_delete(payload):
+    guild_id = int(payload.guild_id)
+    message_table = "m"+str(guild_id)
+    message_id = payload.message_id
+    SQL = f"SELECT mess_id FROM {message_table};"
+    cur.execute(SQL)
+
+    react_mess_ids = [i[0] for i in cur.fetchall() if type(i[0]) is not None]
+
+    if message_id in react_mess_ids:
+        SQL = f"DELETE FROM {message_table} WHERE mess_id = {message_id};"
+        cur.execute(SQL)
+        conn.commit()
+        
 
 @bot.event
 async def on_guild_join(guild):
