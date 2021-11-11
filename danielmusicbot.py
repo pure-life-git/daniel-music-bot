@@ -382,7 +382,7 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
     reminder_id = random.randint(10000, 99999)
 
     # execution_time = datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(0,secs)
-    execution_time = int(time.time()+secs)
+    execution_time = datetime.datetime.today().timestamp() + secs
 
     SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, role_id, repeat, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, {role.id}, {repeat}, '{reminder_message}');"
     cur.execute(SQL)
@@ -432,10 +432,15 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
         await react_message.add_reaction(emoji)
 
     while True:
-        payload = await bot.wait_for('raw_reaction_add')
-        reactioner = payload.member
-        reaction_name = payload.emoji.name
+        add_payload = await bot.wait_for('raw_reaction_add')
+        reactioner = add_payload.member
+        reaction_name = add_payload.emoji.name
         await reactioner.add_roles(discord.utils.get(ctx.guild.roles, name=reaction_to_role[reaction_name]))
+
+        rem_payload = await bot.wait_for('raw_reaction_remove')
+        reactioner = rem_payload.member
+        reaction_name = rem_payload.emoji.name
+        await reactioner.removes_roles(discord.utils.get(ctx.guild.rols, name = reaction_to_role[reaction_name]))
 
         
         
