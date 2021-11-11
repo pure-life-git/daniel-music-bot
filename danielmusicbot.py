@@ -425,6 +425,9 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
     
     react_message = await channel.send(embed=role_select_embed)
 
+    print(reaction_to_role)
+    print(reaction_to_role.keys())
+
     for emoji in reaction_to_role.keys():
         await react_message.add_reaction(emoji)
 
