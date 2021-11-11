@@ -372,7 +372,7 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
 
     if int(ctx.author.id) not in modIDS:
         await ctx.message.delete()
-        await ctx.send(":x: You must have amoderator role to use that command.")
+        await ctx.send(":x: You must have a moderator role to use that command.")
         return
     elif not isinstance(channel, discord.TextChannel):
         await ctx.send("First argument must be a mentioned text channel.")
@@ -398,7 +398,7 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
     for emoji in reaction_to_role:
         await react_message.add_reaction(emoji)
 
-    SQL = f"INSERT INTO {message_table} VALUES ({react_message.id}, {reaction_to_role.values()});"
+    SQL = f"INSERT INTO {message_table} VALUES ({react_message.id}, {';'.join(reaction_to_role.values())});"
     cur.execute(SQL)
     conn.commit()
 
@@ -446,7 +446,7 @@ async def before_check():
 async def on_raw_reaction_add(payload):
     guild = bot.get_guild(payload.guild_id)
     reactioner = guild.get_member(payload.user_id)
-    if reactioner.bot():
+    if reactioner.bot:
         return
     
     channel = guild.get_channel(payload.channel_id)
@@ -463,10 +463,15 @@ async def on_raw_reaction_add(payload):
     if message_id in react_mess_ids:
         SQL = f"SELECT role_names FROM {message_table} WHERE mess_id = {message_id};"
         cur.execute(SQL)
-        role_list = [discord.utils.get(guild.roles, name = i[0]) for i in cur.fetchall()]
+        role_list = cur.fetchall()[0].split(';')
+
+        reaction_to_role = {}
+        for count, role in enumerate(role_list):
+            reaction_to_role[ROLE_EMOTES[count]] = role
         print(role_list)
 
-        # reactioner.add_roles(discord.utils.get(guild.roles, name = ))
+        await reactioner.add_roles(discord.utils.get(guild.roles, name=reaction_to_role[emoji]))
+
 
 
 @bot.event
@@ -486,7 +491,7 @@ async def on_guild_join(guild):
     cur.execute(SQL)
     conn.commit()
 
-    SQL = f"CREATE TABLE {message_name} (mess_id bigint, role_names text[]);"
+    SQL = f"CREATE TABLE {message_name} (mess_id bigint, role_names text);"
     cur.execute(SQL)
     conn.commit()
 
