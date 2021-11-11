@@ -396,7 +396,7 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
 @bot.command(name = "deletereminder", description="Lets you delete a reminder", aliases=["dr"])
 async def delete_reminder(ctx, reminder_id:int):
     server_name = "t"+str(ctx.guild.id)
-    reminder_table = "r"+(ctx.guild.id)
+    reminder_table = "r"+str(ctx.guild.id)
 
 
     cur.execute(f"SELECT mods FROM {server_name};")
