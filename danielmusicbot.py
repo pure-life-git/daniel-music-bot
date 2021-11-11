@@ -394,7 +394,7 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
     #     await channel.send(f"{role}: {reminder_message}")
 
 @bot.command(name="roleselect", description="Lets people assign themselves roles by reacting to a message.", aliases=["rs"])
-async def role_select(ctx, channel:discord.TextChannel, *roles):
+async def role_select(ctx, channel:discord.TextChannel, title="Role Select", descr="Pick a Role!", *roles):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
@@ -413,7 +413,7 @@ async def role_select(ctx, channel:discord.TextChannel, *roles):
     
     server_roles = [role.name for role in ctx.guild.roles]
 
-    role_select_embed = discord.Embed(title = "Role Select", description = "Select a role!", color=bot_color)
+    role_select_embed = discord.Embed(title = title, description = descr, color=bot_color)
 
     reaction_to_role = {}
 
@@ -424,6 +424,9 @@ async def role_select(ctx, channel:discord.TextChannel, *roles):
         reaction_to_role[ROLE_EMOTES[count]] = role_name
     
     react_message = await channel.send(embed=role_select_embed)
+
+    for emoji in reaction_to_role.keys():
+        await react_message.add_reaction(emoji)
 
     while True:
         payload = await bot.wait_for('raw_reaction_add')
