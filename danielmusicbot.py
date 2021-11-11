@@ -398,7 +398,7 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
     for emoji in reaction_to_role:
         await react_message.add_reaction(emoji)
 
-    SQL = f"INSERT INTO {message_table} VALUES ({react_message.id}, {';'.join(reaction_to_role.values())});"
+    SQL = f"INSERT INTO {message_table} VALUES ({react_message.id}, '{';'.join(reaction_to_role.values())}');"
     cur.execute(SQL)
     conn.commit()
 
