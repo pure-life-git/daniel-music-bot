@@ -437,20 +437,20 @@ async def reminders(ctx):
         duration = int(reminder[5])
         repeat = bool(reminder[6])
 
-        days = str(math.floor(duration / (3600*24)))+"d" if math.floor(duration / (3600*24)) > 0 else ""
+        days = str(math.floor(duration / (3600*24))) if math.floor(duration / (3600*24)) > 0 else 0
         duration -= days * 3600 * 24
-        hours = str(math.floor(duration / 3600))+"h" if math.floor(duration / 3600) > 0 else ""
+        hours = str(math.floor(duration / 3600)) if math.floor(duration / 3600) > 0 else 0
         duration -= hours * 3600
-        minutes = str(math.floor(duration / 60))+"m" if math.floor(duration / 60) > 0 else ""
+        minutes = str(math.floor(duration / 60)) if math.floor(duration / 60) > 0 else 0
         duration -= minutes * 60
-        duration = str(duration) + "s" if duration > 0 else ""
+        duration = str(duration) if duration > 0 else 0
 
 
         
 
         description = f"""Channel: {channel}
         Role: {role}
-        Time Between Reminders: {days}{hours}{minutes}{duration}
+        Time Between Reminders: {days}d{hours}hr{minutes}m{duration}s
         Next Reminder: {datetime.datetime.fromtimestamp(execution_time)}
         Repeating: {repeat}
         """
