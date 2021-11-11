@@ -403,7 +403,7 @@ async def delete_reminder(ctx, reminder_id:int):
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
     cur.execute(f"SELECT reminder_id FROM {reminder_table};")
-    reminder_ids = [i[0] for i in cur.fetchall() if type(id[0]) is int]
+    reminder_ids = [i[0] for i in cur.fetchall() if type(i[0]) is int]
 
     if int(ctx.author.id) not in modIDS:
         await ctx.message.delete()
