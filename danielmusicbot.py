@@ -1,6 +1,4 @@
-import ctypes
 import asyncio
-import ctypes.util
 import datetime
 import time
 import math
@@ -8,19 +6,9 @@ import os
 import random
 
 import discord
-from discord import colour
-from discord import permissions
-from discord.errors import ClientException
 from discord.ext import commands, tasks
-from discord.ext.commands.errors import CommandOnCooldown
-from discord.player import FFmpegPCMAudio
 
-import spotipy
-import spotipy.oauth2 as oauth2
 import psycopg2
-import requests
-import youtube_dl
-from youtube_search import YoutubeSearch
 
 DEFAULT_PREFIX = "?"
 
@@ -37,8 +25,28 @@ ROLE_EMOTES = [
     "🟣", "🟤", "⚫", "⚪", "❤",
     "🧡", "💛", "💚", "💙", "💜",
     "🤎", "🖤", "🤍", "🔲", "🔳"
+]
+
+def col(hex:str):
+    def hex2rgb(hex:str):
+        hex = hex.lstrip('#')
+        lv = len(hex)
+        return tuple(int(hex[i:i + lv // 3], 16) for i in range(0, lv, lv //3))
     
-    ]
+    rgb = hex2rgb(hex)
+
+    return discord.Color.from_rgb(rgb[0], rgb[1], rgb[2])
+
+
+
+ROLE_COLORS = [
+    col("#e52165"), col("#a2d5c6"), col("#077b8a"), col("#5c3c92"), col("#e75874"),
+    col("#fbcbc9"), col("#7fe7dc"), col("#ffc13b"), col("#d9a5b3"), col("#1868ae"),
+    col("#c6d7eb"), col("#408ec6"), col("#8a307f"), col("#6883bc"), col("#ff9a8d"),
+    col("#da68a0"), col("#77c593"), col("#ced7d8"), col("#f162ff"), col("#daf2dc"),
+    col("#4d5198"), col("#ffcce7"), col("#a9c0a6"), col("#cbd18f"), col("#9bc472"),
+    col("#a7beae"), col("#1978a5"), col("#315f72"), col("#efb5a3"), col("#0073cf")
+]
 
 DATABASE_URL = os.environ['DATABASE_URL']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
@@ -422,9 +430,11 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
 
     reaction_to_role = {}
 
+    colors = random.sample(ROLE_COLORS, len(roles))
+
     for count, role_name in enumerate(roles):
         if role_name not in server_roles:
-            await ctx.guild.create_role(name=role_name, color=bot_color, reason="Created by `role_select` command.")
+            await ctx.guild.create_role(name=role_name, color=bot_color, reason="Created by `role_select` command.", color = colors[count])
         role_select_embed.add_field(name = f"{ROLE_EMOTES[count]} - {role_name}", value = f"Click the {ROLE_EMOTES[count]} to gain the role {role_name}.", inline=False)
         reaction_to_role[ROLE_EMOTES[count]] = role_name
     
@@ -436,17 +446,6 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
     SQL = f"INSERT INTO {message_table} VALUES ({react_message.id}, '{';'.join(reaction_to_role.values())}');"
     cur.execute(SQL)
     conn.commit()
-
-    # while True:
-    #     # add_payload = await bot.wait_for('raw_reaction_add')
-    #     # reactioner = add_payload.member
-    #     # reaction_name = add_payload.emoji.name
-    #     # await reactioner.add_roles(discord.utils.get(ctx.guild.roles, name=reaction_to_role[reaction_name]))
-
-    #     # rem_payload = await bot.wait_for('raw_reaction_remove')
-    #     # reactioner = ctx.guild.get_member(rem_payload.user_id)
-    #     # reaction_name = rem_payload.emoji.name
-    #     # await reactioner.remove_roles(discord.utils.get(ctx.guild.roles, name = reaction_to_role[reaction_name]))
 
 @tasks.loop(seconds=5, loop = bot.loop)
 async def check_reminders():
@@ -612,8 +611,8 @@ async def on_guild_remove(guild):
     SQL = f"DROP TABLE {message_table};"
     cur.execute(SQL)
     conn.commit()
-    
+
+
 #--------------------------------------------------------------------------------------------------------------------------------------#
 #runs the bot using the discord bot token provided within Heroku
 bot.run(os.environ['token'])
-
