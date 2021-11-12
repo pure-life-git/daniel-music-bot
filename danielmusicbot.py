@@ -54,6 +54,12 @@ bot = commands.Bot(command_prefix = get_prefix, description = "General purpose m
 bot.remove_command('help')
 bot_color = discord.Color.from_rgb(81,193,177)
 
+@bot.event
+async def on_ready():
+    print(f'{bot.user.name} has connected to Discord!')
+    await bot.change_presence(status = discord.Status.online, activity=discord.Game("?help"))
+    check_reminders.start()
+
 @bot.group(name='help', invoke_without_command = True)
 async def help(ctx):
     cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
@@ -64,11 +70,42 @@ async def help(ctx):
     helpEmbed.set_footer(text = f"For more information try {cur_prefix}help (command) or {cur_prefix}help (category), ex: {cur_prefix}help reminder, {cur_prefix}help settings, etc.")
     await ctx.send(embed=helpEmbed)
 
-@bot.event
-async def on_ready():
-    print(f'{bot.user.name} has connected to Discord!')
-    await bot.change_presence(status = discord.Status.online, activity=discord.Game("?help"))
-    check_reminders.start()
+@help.command(name = "reminder", description = "Lets you set a reminder.", aliases = ["r"])
+async def reminder_help(ctx):
+    cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
+    cur_prefix = cur.fetchone()[0]
+    description = f"""`channel`: a text channel where you want the reminder to be posted ex. `#general`
+    `role`: the role you want mentioned by the reminder ex. `@everyone`
+    `repeat [true/false]`: whether you want the reminder to repeat
+    `duration [s/m/h/d/w]`: time until the reminder ex. `1w, 2d, 3h, etc.`
+    `message`: the reminder message ex. `'go get groceries'`
+    """
+    helpEmbed = discord.Embed(title = "K-Scope Bot Help", description = "Help with the reminder command", color = bot_color)
+    helpEmbed.add_field(name = f"{cur_prefix}reminder <channel> <role> <repeat> <duration> <message>", value = description, inline = False)
+    await ctx.send(embed = helpEmbed)
+
+@help.command(name = "deletereminder", description = "Lets you delete a reminder", aliases = ["dr"])
+async def deletereminder_help(ctx):
+    cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
+    cur_prefix = cur.fetchone()[0]
+    description = f"`id`: the 5-digit id of the reminder you want to delete"
+    helpEmbed = discord.Embed(title = "K-Scope Bot Help", description = "Help with the deletereminder command", color = bot_color)
+    helpEmbed.add_field(name = f"{cur_prefix}deletereminder <id>", value = description, inline = False)
+    await ctx.send(embed = helpEmbed)
+
+@help.command(name = "roleselect", description = "Lets people assign themselves roles by reacting to a message", aliases = ["rs"])
+async def deletereminder_help(ctx):
+    cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
+    cur_prefix = cur.fetchone()[0]
+    description = f"""`channel`: a text channel where you want the role select to be posted ex. `#general`
+    `title`: the title of the role selection
+    `descr`: the description of the role selection
+    `*roles`: all the roles you want to be available, separated by spaces ex. `one two three "four five"` 
+    """
+    helpEmbed = discord.Embed(title = "K-Scope Bot Help", description = "Help with the roleselect command", color = bot_color)
+    helpEmbed.add_field(name = f"{cur_prefix}roleselect <channel> <title> <descr> <*roles>", value = description, inline = False)
+    helpEmbed.set_footer(text = """If you want a multi-word title, description, or role, surround it with "quotation marks" """)
+    await ctx.send(embed = helpEmbed)
 
 @bot.group(name="settings", description="Allows an admin to change the settings of the bot", invoke_without_command=True)
 async def settings(ctx):
@@ -359,8 +396,6 @@ async def reminders(ctx):
         reminder_embed.add_field(name = f"`[{reminder_id}]`: {reminder_message}", value = description, inline=False)
     
     await ctx.send(embed = reminder_embed)
-
-
 
 @bot.command(name="roleselect", description="Lets people assign themselves roles by reacting to a message.", aliases=["rs"])
 async def role_select(ctx, channel:discord.TextChannel, title="Role Select", descr="Pick a Role!", *roles):
