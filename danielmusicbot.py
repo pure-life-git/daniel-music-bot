@@ -434,7 +434,7 @@ async def role_select(ctx, channel:discord.TextChannel, title="Role Select", des
 
     for count, role_name in enumerate(roles):
         if role_name not in server_roles:
-            await ctx.guild.create_role(name=role_name, color=bot_color, reason="Created by `role_select` command.", color = colors[count])
+            await ctx.guild.create_role(name=role_name, reason="Created by `role_select` command.", color = colors[count])
         role_select_embed.add_field(name = f"{ROLE_EMOTES[count]} - {role_name}", value = f"Click the {ROLE_EMOTES[count]} to gain the role {role_name}.", inline=False)
         reaction_to_role[ROLE_EMOTES[count]] = role_name
     
