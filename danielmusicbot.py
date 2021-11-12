@@ -330,7 +330,7 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
     # execution_time = datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(0,secs)
     execution_time = int(time.time()+secs)
 
-    SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, role_id, repeat, message, duration) VALUES ({reminder_id}, {execution_time}, {channel.id}, {role.id}, {repeat}, '{reminder_message}', {secs});"
+    SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, role_id, repeat, duration, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, {role.id}, {repeat}, {secs}, '{reminder_message}');"
     cur.execute(SQL)
     conn.commit()
 
@@ -468,6 +468,10 @@ async def check_reminders():
 
                 if repeat:
                     SQL = f"UPDATE {reminder_table} SET execution_time = {int(time.time()+duration)} WHERE reminder_id = {reminder_id};"
+                    cur.execute(SQL)
+                    conn.commit()
+                else:
+                    SQL = f"DELETE FROM {reminder_table} WHERE reminder_id = {reminder_id};"
                     cur.execute(SQL)
                     conn.commit()
 
