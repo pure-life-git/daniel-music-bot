@@ -318,7 +318,7 @@ async def change_prefix(ctx, prefix):
         return
 
 @bot.command(name="reminder", description="Lets you set a reminder", aliases=["r"])
-async def reminder(ctx, channel:discord.TextChannel, role, repeat:bool, now:bool ,duration:str, *args):
+async def reminder(ctx, channel:discord.TextChannel, repeat:bool, now:bool ,duration:str, *args):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
@@ -356,7 +356,7 @@ async def reminder(ctx, channel:discord.TextChannel, role, repeat:bool, now:bool
     # execution_time = datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(0,secs)
     execution_time = int(time.time()+secs)
 
-    SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, mention, repeat, duration, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, '{role}', {repeat}, {secs}, '{reminder_message}');"
+    SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, mention, repeat, duration, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, {repeat}, {secs}, '{reminder_message}');"
     cur.execute(SQL)
     conn.commit()
 
@@ -589,7 +589,7 @@ async def on_guild_join(guild):
     cur.execute(SQL)
     conn.commit()
 
-    SQL = f"CREATE TABLE {reminder_name} (reminder_id bigint, execution_time bigint, channel_id bigint, role_id bigint, message text, duration bigint, repeat boolean);"
+    SQL = f"CREATE TABLE {reminder_name} (reminder_id bigint, execution_time bigint, channel_id bigint, message text, duration bigint, repeat boolean);"
     cur.execute(SQL)
     conn.commit()
 
