@@ -331,18 +331,19 @@ async def reminder(ctx, channel:discord.TextChannel, role, repeat:bool, now:bool
     elif not isinstance(channel, discord.TextChannel):
         await ctx.send("First argument must be a mentioned text channel.")
         return
-    elif len(ctx.message.mentions) == 0 and len(ctx.message.role_mentions) == 0:
-        await ctx.send("Second argument must be a mentioned role or user.")
-        return
+    # elif len(ctx.message.mentions) == 0 and len(ctx.message.role_mentions) == 0 and not ctx.message.mention_everyone:
+    #     await ctx.send("Second argument must be a mentioned role or user.")
+    #     return
     
     reminder_message = " ".join(args)
 
     duration, letter, rest = re.split(r"([a-z])", duration, 1, flags=re.I)
 
-    if len(ctx.message.mentions) > 0:
-        role = "u" + str(ctx.message.mentions[0].id)
-    if len(ctx.message.role_mentions) > 0:
-        role = "r" + str(ctx.message.role_mentions[0].id)
+    # if len(ctx.message.mentions) > 0:
+    #     role = "u" + str(ctx.message.mentions[0].id)
+    # if len(ctx.message.role_mentions) > 0:
+    #     role = "r" + str(ctx.message.role_mentions[0].id)
+    # if ctx.message.mention_everyone:
 
 
     # secs = int(int(duration[:-1])*TIME_TABLE[duration[-1]])
@@ -359,16 +360,11 @@ async def reminder(ctx, channel:discord.TextChannel, role, repeat:bool, now:bool
     cur.execute(SQL)
     conn.commit()
 
-    await ctx.send(f":white_check_mark: `[{reminder_id}]` Reminder Set! Will remind {role} of `{reminder_message}` in `{duration}`.")
+    await ctx.send(f":white_check_mark: `[{reminder_id}]` Reminder Set! Will remind {channel.mention} of `{reminder_message}` in `{duration}`.")
 
     if now:
-        if role[0] == "u":
-            role = ctx.guild.get_member(int(role[1:]))
-        
-        if role[0] == "r":
-            role = ctx.guild.get_role(int(role[1:]))
 
-        await channel.send(content = f"`[{reminder_id}]` {role.mention}: {reminder_message}")
+        await channel.send(content = f"`[{reminder_id}]`: {reminder_message}")
     # while True:
     #     await asyncio.sleep(secs)
     #     await channel.send(f"{role}: {reminder_message}")
@@ -412,10 +408,9 @@ async def reminders(ctx):
         reminder_id = reminder[0]
         execution_time = reminder[1]
         channel = ctx.guild.get_channel(reminder[2])
-        role = ctx.guild.get_role(int(reminder[3][1:])) if reminder[3][0] == "r" else ctx.guild.get_member(int(reminder[3][1:]))
-        reminder_message = str(reminder[4])
-        duration = int(reminder[5])
-        repeat = bool(reminder[6])
+        reminder_message = str(reminder[3])
+        duration = int(reminder[4])
+        repeat = bool(reminder[5])
 
         days = math.floor(duration / (3600*24)) if math.floor(duration / (3600*24)) > 0 else 0
         duration -= days * 3600 * 24
@@ -429,7 +424,6 @@ async def reminders(ctx):
         
 
         description = f"""Channel: {channel}
-        Role: {role}
         Time Between Reminders: {days}d{hours}hr{minutes}m{duration}s
         Next Reminder: {datetime.datetime.fromtimestamp(execution_time)}
         Repeating: {repeat}
@@ -493,12 +487,11 @@ async def check_reminders():
                 reminder_id = int(reminder[0])
                 execution_time = reminder[1]
                 channel = guild.get_channel(reminder[2])
-                role = guild.get_role(int(reminder[3][1:])) if reminder[3][0] == "r" else guild.get_member(int(reminder[3][1:]))
-                reminder_message = str(reminder[4])
-                duration = int(reminder[5])
-                repeat = bool(reminder[6])
+                reminder_message = str(reminder[3])
+                duration = int(reminder[4])
+                repeat = bool(reminder[5])
 
-                await channel.send(content = f"`[{reminder_id}]` {role.mention}: {reminder_message}")
+                await channel.send(content = f"`[{reminder_id}]`: {reminder_message}")
 
                 if repeat:
                     SQL = f"UPDATE {reminder_table} SET execution_time = {int(time.time()+duration)} WHERE reminder_id = {reminder_id};"
@@ -508,11 +501,6 @@ async def check_reminders():
                     SQL = f"DELETE FROM {reminder_table} WHERE reminder_id = {reminder_id};"
                     cur.execute(SQL)
                     conn.commit()
-
-@check_reminders.before_loop
-async def before_check():
-    print("waiting...")
-    await bot.wait_until_ready()
 
 @bot.event
 async def on_raw_reaction_add(payload):
