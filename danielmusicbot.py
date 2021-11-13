@@ -15,25 +15,10 @@ DEFAULT_PREFIX = "?"
 
 TIME_TABLE = {
     "s": 1,
-    "sec": 1,
-    "second": 1,
-    "seconds": 1,
     "m": 60,
-    "min":60,
-    "mins": 60,
-    "minutes": 60,
     "h": 3600,
-    "hr": 3600,
-    "hour": 3600,
-    "hours": 3600,
     "d": 86400,
-    "day": 86400,
-    "days": 86400,
     "w": 604800,
-    "wk": 604800,
-    "wks": 604800,
-    "week": 604800,
-    "weeks": 604800
 }
 
 ROLE_EMOTES = [
@@ -331,43 +316,27 @@ async def reminder(ctx, channel:discord.TextChannel, repeat:bool, now:bool ,dura
     elif not isinstance(channel, discord.TextChannel):
         await ctx.send("First argument must be a mentioned text channel.")
         return
-    # elif len(ctx.message.mentions) == 0 and len(ctx.message.role_mentions) == 0 and not ctx.message.mention_everyone:
-    #     await ctx.send("Second argument must be a mentioned role or user.")
-    #     return
     
     reminder_message = " ".join(args)
 
     duration, letter, rest = re.split(r"([a-z])", duration, 1, flags=re.I)
 
-    # if len(ctx.message.mentions) > 0:
-    #     role = "u" + str(ctx.message.mentions[0].id)
-    # if len(ctx.message.role_mentions) > 0:
-    #     role = "r" + str(ctx.message.role_mentions[0].id)
-    # if ctx.message.mention_everyone:
-
-
-    # secs = int(int(duration[:-1])*TIME_TABLE[duration[-1]])
     secs = int(int(duration)*TIME_TABLE[letter])
 
     reminder_table = "r" + str(ctx.guild.id)
 
     reminder_id = random.randint(10000, 99999)
 
-    # execution_time = datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(0,secs)
     execution_time = int(time.time()+secs)
 
     SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, repeat, duration, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, {repeat}, {secs}, '{reminder_message}');"
     cur.execute(SQL)
     conn.commit()
 
-    await ctx.send(f":white_check_mark: `[{reminder_id}]` Reminder Set! Will remind {channel.mention} of `{reminder_message}` in `{duration}`.")
+    await ctx.send(f":white_check_mark: `[{reminder_id}]` Reminder Set! Will remind {channel} of `{reminder_message}` in `{duration+letter}`.")
 
     if now:
-
         await channel.send(content = f"`[{reminder_id}]`: {reminder_message}")
-    # while True:
-    #     await asyncio.sleep(secs)
-    #     await channel.send(f"{role}: {reminder_message}")
 
 @bot.command(name = "deletereminder", description="Lets you delete a reminder", aliases=["dr"])
 async def delete_reminder(ctx, reminder_id:int):
@@ -419,9 +388,6 @@ async def reminders(ctx):
         minutes = math.floor(duration / 60) if math.floor(duration / 60) > 0 else 0
         duration -= minutes * 60
         duration = duration if duration > 0 else 0
-
-
-        
 
         description = f"""Channel: {channel}
         Time Between Reminders: {days}d{hours}hr{minutes}m{duration}s
@@ -574,7 +540,6 @@ async def on_raw_message_delete(payload):
         SQL = f"DELETE FROM {message_table} WHERE mess_id = {message_id};"
         cur.execute(SQL)
         conn.commit()
-
 
 @bot.event
 async def on_guild_join(guild):
