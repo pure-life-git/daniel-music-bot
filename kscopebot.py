@@ -69,52 +69,11 @@ async def on_ready():
     await bot.change_presence(status = discord.Status.online, activity=discord.Game("?help"))
     check_reminders.start()
 
-@bot.group(name='help', invoke_without_command = True)
+@bot.group(name='help', description = "Displays a link to the source code and README", aliases=["h"])
 async def help(ctx):
-    cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
-    cur_prefix = cur.fetchone()[0]
-    helpEmbed = discord.Embed(title = "K-Scope Bot Help", description = f"The prefix of the bot is `{cur_prefix}`", color = bot_color)
-    helpEmbed.add_field(name = ":alarm_clock: **Reminders - 3**", value = "`reminder (r)`, `deletereminder (dr)`, `reminders`")
-    helpEmbed.add_field(name = ":gear: **Settings**", value = "`settings`", inline = False)
-    helpEmbed.set_footer(text = f"For more information try {cur_prefix}help (command) or {cur_prefix}help (category), ex: {cur_prefix}help reminder, {cur_prefix}help settings, etc.")
-    await ctx.send(embed=helpEmbed)
+    await ctx.send(f"`Source code and help found here:` https://github.com/pure-life-git/k-scope-bot")
+    return
 
-@help.command(name = "reminder", description = "Lets you set a reminder.", aliases = ["r"])
-async def reminder_help(ctx):
-    cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
-    cur_prefix = cur.fetchone()[0]
-    description = f"""`channel`: a text channel where you want the reminder to be posted ex. `#general`
-    `role`: the role you want mentioned by the reminder ex. `@everyone`
-    `repeat [true/false]`: whether you want the reminder to repeat
-    `duration [s/m/h/d/w]`: time until the reminder ex. `1w, 2d, 3h, etc.`
-    `message`: the reminder message ex. `'go get groceries'`
-    """
-    helpEmbed = discord.Embed(title = "K-Scope Bot Help", description = "Help with the reminder command", color = bot_color)
-    helpEmbed.add_field(name = f"{cur_prefix}reminder <channel> <role> <repeat> <duration> <message>", value = description, inline = False)
-    await ctx.send(embed = helpEmbed)
-
-@help.command(name = "deletereminder", description = "Lets you delete a reminder", aliases = ["dr"])
-async def deletereminder_help(ctx):
-    cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
-    cur_prefix = cur.fetchone()[0]
-    description = f"`id`: the 5-digit id of the reminder you want to delete"
-    helpEmbed = discord.Embed(title = "K-Scope Bot Help", description = "Help with the deletereminder command", color = bot_color)
-    helpEmbed.add_field(name = f"{cur_prefix}deletereminder <id>", value = description, inline = False)
-    await ctx.send(embed = helpEmbed)
-
-@help.command(name = "roleselect", description = "Lets people assign themselves roles by reacting to a message", aliases = ["rs"])
-async def deletereminder_help(ctx):
-    cur.execute(f"SELECT prefix FROM prefixes WHERE server_id={ctx.guild.id};")
-    cur_prefix = cur.fetchone()[0]
-    description = f"""`channel`: a text channel where you want the role select to be posted ex. `#general`
-    `title`: the title of the role selection
-    `descr`: the description of the role selection
-    `*roles`: all the roles you want to be available, separated by spaces ex. `one two three "four five"` 
-    """
-    helpEmbed = discord.Embed(title = "K-Scope Bot Help", description = "Help with the roleselect command", color = bot_color)
-    helpEmbed.add_field(name = f"{cur_prefix}roleselect <channel> <title> <descr> <*roles>", value = description, inline = False)
-    helpEmbed.set_footer(text = """If you want a multi-word title, description, or role, surround it with "quotation marks" """)
-    await ctx.send(embed = helpEmbed)
 
 @bot.group(name="settings", description="Allows an admin to change the settings of the bot", invoke_without_command=True)
 async def settings(ctx):
@@ -301,6 +260,8 @@ async def change_prefix(ctx, prefix):
         conn.commit()
         await ctx.send(f"Prefix successfully changed to `{prefix}`.")
         return
+
+
 
 @bot.command(name="reminder", description="Lets you set a reminder", aliases=["r"])
 async def reminder(ctx, channel:discord.TextChannel, repeat:bool, now:bool ,duration:str, *args):
