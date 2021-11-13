@@ -356,7 +356,7 @@ async def reminder(ctx, channel:discord.TextChannel, repeat:bool, now:bool ,dura
     # execution_time = datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(0,secs)
     execution_time = int(time.time()+secs)
 
-    SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, mention, repeat, duration, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, {repeat}, {secs}, '{reminder_message}');"
+    SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, repeat, duration, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, {repeat}, {secs}, '{reminder_message}');"
     cur.execute(SQL)
     conn.commit()
 
