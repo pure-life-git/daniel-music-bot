@@ -5,7 +5,7 @@ import math
 import os
 import random
 import re
-import pytz
+import arrow
 
 import discord
 from discord.ext import commands, tasks
@@ -344,9 +344,13 @@ async def reminders(ctx):
         duration -= minutes * 60
         duration = duration if duration > 0 else 0
 
-        description = f"""Channel: {channel}
+        utc = arrow.Arrow.fromtimestamp(execution_time)
+        conv = utc.to('US/Eastern')
+
+
+        description = f"""Channel: #{channel}
         Time Between Reminders: {days}d {hours}hr {minutes}m {duration}s
-        Next Reminder: {datetime.datetime.fromtimestamp(execution_time).astimezone(pytz.timezone('US/Eastern')).strftime(f"%Y-%m-%d %H:%M:%S %Z")}
+        Next Reminder: {conv.format("MMM D, YYYY h:mm:ssA ") + conv.tzname()}
         Repeating: {repeat}
         """
 
@@ -412,7 +416,7 @@ async def check_reminders():
                 duration = int(reminder[4])
                 repeat = bool(reminder[5])
 
-                await channel.send(content = f"`[{reminder_id}]`: {reminder_message}")
+                await channel.send(content = f"**Reminder `[{reminder_id}]`\n{reminder_message}")
 
                 if repeat:
                     SQL = f"UPDATE {reminder_table} SET execution_time = {int(time.time()+duration)} WHERE reminder_id = {reminder_id};"
