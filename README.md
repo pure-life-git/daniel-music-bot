@@ -1,5 +1,7 @@
-# daniel-music-bot
+# K-Scope Bot
 
-## general purpose music bot
+## Role selection and reminders bot for the Kaelaidescope Club at Kalamazoo
 
-## default prefix is `!`
+## default prefix is `?`
+
+## Commands

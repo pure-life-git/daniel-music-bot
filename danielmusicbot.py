@@ -4,6 +4,7 @@ import time
 import math
 import os
 import random
+import re
 
 import discord
 from discord.ext import commands, tasks
@@ -14,10 +15,25 @@ DEFAULT_PREFIX = "?"
 
 TIME_TABLE = {
     "s": 1,
+    "sec": 1,
+    "second": 1,
+    "seconds": 1,
     "m": 60,
+    "min":60,
+    "mins": 60,
+    "minutes": 60,
     "h": 3600,
+    "hr": 3600,
+    "hour": 3600,
+    "hours": 3600,
     "d": 86400,
-    "w": 604800
+    "day": 86400,
+    "days": 86400,
+    "w": 604800,
+    "wk": 604800,
+    "wks": 604800,
+    "week": 604800,
+    "weeks": 604800
 }
 
 ROLE_EMOTES = [
@@ -302,7 +318,7 @@ async def change_prefix(ctx, prefix):
         return
 
 @bot.command(name="reminder", description="Lets you set a reminder", aliases=["r"])
-async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:bool ,duration:str, *args):
+async def reminder(ctx, channel:discord.TextChannel, role, repeat:bool, now:bool ,duration:str, *args):
     server_name = "t"+str(ctx.guild.id)
 
     cur.execute(f"SELECT mods FROM {server_name};")
@@ -321,7 +337,16 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
     
     reminder_message = " ".join(args)
 
-    secs = int(int(duration[:-1])*TIME_TABLE[duration[-1]])
+    duration, letter, rest = re.split(r"([a-z])", duration, 1, flags=re.I)
+
+    if len(ctx.message.mentions) > 0:
+        role = "u" + str(ctx.message.mentions[0].id)
+    if len(ctx.message.role_mentions) > 0:
+        role = "r" + str(ctx.message.role_mentions[0].id)
+
+
+    # secs = int(int(duration[:-1])*TIME_TABLE[duration[-1]])
+    secs = int(int(duration)*TIME_TABLE[letter])
 
     reminder_table = "r" + str(ctx.guild.id)
 
@@ -330,11 +355,20 @@ async def reminder(ctx, channel:discord.TextChannel, role:discord.Role, repeat:b
     # execution_time = datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(0,secs)
     execution_time = int(time.time()+secs)
 
-    SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, role_id, repeat, duration, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, {role.id}, {repeat}, {secs}, '{reminder_message}');"
+    SQL = f"INSERT INTO {reminder_table}(reminder_id, execution_time, channel_id, mention, repeat, duration, message) VALUES ({reminder_id}, {execution_time}, {channel.id}, '{role}', {repeat}, {secs}, '{reminder_message}');"
     cur.execute(SQL)
     conn.commit()
 
     await ctx.send(f":white_check_mark: `[{reminder_id}]` Reminder Set! Will remind {role} of `{reminder_message}` in `{duration}`.")
+
+    if now:
+        if role[0] == "u":
+            role = ctx.guild.get_member(int(role[1:]))
+        
+        if role[0] == "r":
+            role = ctx.guild.get_role(int(role[1:]))
+
+        await channel.send(content = f"`[{reminder_id}]` {role.mention}: {reminder_message}")
     # while True:
     #     await asyncio.sleep(secs)
     #     await channel.send(f"{role}: {reminder_message}")
@@ -378,7 +412,7 @@ async def reminders(ctx):
         reminder_id = reminder[0]
         execution_time = reminder[1]
         channel = ctx.guild.get_channel(reminder[2])
-        role = ctx.guild.get_role(reminder[3])
+        role = ctx.guild.get_role(int(reminder[3][1:])) if reminder[3][0] == "r" else ctx.guild.get_member(int(reminder[3][1:]))
         reminder_message = str(reminder[4])
         duration = int(reminder[5])
         repeat = bool(reminder[6])
@@ -459,7 +493,7 @@ async def check_reminders():
                 reminder_id = int(reminder[0])
                 execution_time = reminder[1]
                 channel = guild.get_channel(reminder[2])
-                role = guild.get_role(reminder[3])
+                role = guild.get_role(int(reminder[3][1:])) if reminder[3][0] == "r" else guild.get_member(int(reminder[3][1:]))
                 reminder_message = str(reminder[4])
                 duration = int(reminder[5])
                 repeat = bool(reminder[6])
