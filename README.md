@@ -17,7 +17,7 @@
         ?reminder #general true true 1w @everyone remember to go to the meeting!
         ```
         - This will send `@everyone remember to go to the meeting!` to `#general` every `1w`. It will also send that reminder immediately to `#general`.
-<br>
+
 - ?reminderdelete `<reminder_id>`
     - reminder_id: the 5-digit id of the reminder you'd like to delete
     -ex:
@@ -25,10 +25,10 @@
         ?reminderdelete 12345
         ```
         - This will delete the remind with the id of `12345`
-<br>
+
 - ?reminders
     - Lists the currently active reminders
-<br>
+
 ### Role Select
 - ?roleselect `<channel> <title> <description> <*roles>`
     - channel: the Text Channel to send the role select message to (should be mentioned using `#`)
