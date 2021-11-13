@@ -5,6 +5,7 @@ import math
 import os
 import random
 import re
+import pytz
 
 import discord
 from discord.ext import commands, tasks
@@ -49,6 +50,8 @@ ROLE_COLORS = [
     col("#a7beae"), col("#1978a5"), col("#315f72"), col("#efb5a3"), col("#0073cf")
 ]
 
+month_table = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
 DATABASE_URL = os.environ['DATABASE_URL']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = conn.cursor()
@@ -84,19 +87,10 @@ async def settings(ctx):
     cur.execute(f"SELECT mods FROM {server_name};")
     modIDS = [id[0] for id in cur.fetchall() if type(id[0]) is int]
 
-    cur.execute(f"SELECT channels FROM {server_name};")
-    channelWhitelist = [channel[0] for channel in cur.fetchall() if type(channel[0]) is int]
-
     if int(ctx.author.id) not in modIDS:
         await ctx.message.delete()
         await ctx.send(":x: You must have a moderator role to use that command.")
         await asyncio.sleep(5)
-        return
-    elif len(channelWhitelist) > 0 and int(ctx.channel.id) not in channelWhitelist:
-        await ctx.message.delete()
-        mess = await ctx.send(":x: This channel is not on the bot's whitelist")
-        await asyncio.sleep(5)
-        await mess.delete()
         return
     else:
         settings_embed = discord.Embed(title = "K-Scope Bot Settings", description = f"The prefix of the bot is `{cur_prefix}`", color=bot_color)
@@ -351,8 +345,8 @@ async def reminders(ctx):
         duration = duration if duration > 0 else 0
 
         description = f"""Channel: {channel}
-        Time Between Reminders: {days}d{hours}hr{minutes}m{duration}s
-        Next Reminder: {datetime.datetime.fromtimestamp(execution_time)}
+        Time Between Reminders: {days}d {hours}hr {minutes}m {duration}s
+        Next Reminder: {datetime.datetime.fromtimestamp(execution_time).astimezone(pytz.timezone('US/Eastern')).strftime(f"%Y-%m-%d %H:%M:%S %Z")}
         Repeating: {repeat}
         """
 
