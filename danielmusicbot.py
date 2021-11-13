@@ -331,8 +331,8 @@ async def reminder(ctx, channel:discord.TextChannel, role, repeat:bool, now:bool
     elif not isinstance(channel, discord.TextChannel):
         await ctx.send("First argument must be a mentioned text channel.")
         return
-    elif not isinstance(role, discord.Role):
-        await ctx.send("Second argument must be a mentioned role.")
+    elif len(ctx.message.mentions) == 0 and len(ctx.message.role_mentions) == 0:
+        await ctx.send("Second argument must be a mentioned role or user.")
         return
     
     reminder_message = " ".join(args)
