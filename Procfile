@@ -1,1 +1,1 @@
-worker: python danielmusicbot.py
+worker: python kscopebot.py
