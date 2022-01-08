@@ -90,7 +90,6 @@ async def settings(ctx):
     if int(ctx.author.id) not in modIDS:
         await ctx.message.delete()
         await ctx.send(":x: You must have a moderator role to use that command.")
-        await asyncio.sleep(5)
         return
     else:
         settings_embed = discord.Embed(title = "K-Scope Bot Settings", description = f"The prefix of the bot is `{cur_prefix}`", color=bot_color)
@@ -291,7 +290,7 @@ async def reminder(ctx, channel:discord.TextChannel, repeat:bool, now:bool ,dura
     await ctx.send(f":white_check_mark: `[{reminder_id}]` Reminder Set! Will remind {channel} of `{reminder_message}` in `{duration+letter}`.")
 
     if now:
-        await channel.send(content = f"`[{reminder_id}]`: {reminder_message}")
+        await channel.send(content = f"**Reminder** `[{reminder_id}]`\n{reminder_message}")
 
 @bot.command(name = "deletereminder", description="Lets you delete a reminder", aliases=["dr"])
 async def delete_reminder(ctx, reminder_id:int):
@@ -416,7 +415,7 @@ async def check_reminders():
                 duration = int(reminder[4])
                 repeat = bool(reminder[5])
 
-                await channel.send(content = f"**Reminder `[{reminder_id}]`\n{reminder_message}")
+                await channel.send(content = f"**Reminder** `[{reminder_id}]`\n{reminder_message}")
 
                 if repeat:
                     SQL = f"UPDATE {reminder_table} SET execution_time = {int(time.time()+duration)} WHERE reminder_id = {reminder_id};"
